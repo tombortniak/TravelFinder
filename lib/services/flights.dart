@@ -1,31 +1,7 @@
-import 'dart:convert';
-import 'package:http/http.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-const baseRyanairApiUrl =
-    'https://services-api.ryanair.com/farfnd/3/oneWayFares?&';
-
-enum Currency { EUR, USD, PLN }
-
 class FlightFinder {
-  String _departureCity;
-  DateTime _departureDateFrom;
-  DateTime _departureDateTo;
-  Currency _currency;
-  int _maxPriceValue;
   List<Airport> _availableAirports = [];
-
-  FlightFinder(
-      {required departureCity,
-      required departureDateFrom,
-      required departureDateTo,
-      required currency,
-      required maxPriceValue})
-      : _departureCity = departureCity,
-        _departureDateFrom = departureDateFrom,
-        _departureDateTo = departureDateTo,
-        _currency = currency,
-        _maxPriceValue = maxPriceValue;
 
   void getAvailableAirports() {
     FirebaseFirestore.instance
