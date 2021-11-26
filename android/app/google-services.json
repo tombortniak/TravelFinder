@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "453654472135",
+    "project_id": "travelfinder-3332d",
+    "storage_bucket": "travelfinder-3332d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453654472135:android:0c06fce9ba67a9eb3765e2",
+        "android_client_info": {
+          "package_name": "com.tombortniak.travel_finder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "453654472135-mkps5du4p8udi9risblv1tjv0smo9on2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCvfZsIA9fKQk5b9MAvaccs1kZh6_AS38"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "453654472135-mkps5du4p8udi9risblv1tjv0smo9on2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
