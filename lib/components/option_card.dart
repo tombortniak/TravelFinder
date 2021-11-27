@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'option_content.dart';
 
 class OptionCard extends StatelessWidget {
-  final String _title;
+  final OptionContent _optionContent;
 
-  OptionCard({required title}) : _title = title;
+  OptionCard({required optionContent}) : _optionContent = optionContent;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Padding(
-        child: Text(_title),
-        padding: EdgeInsets.all(50.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _optionContent,
+        ],
       ),
-      color: Colors.blueGrey,
+      padding: EdgeInsets.all(10.0),
       margin: EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+          color: Colors.lightBlueAccent,
+          borderRadius: BorderRadius.circular(15.0)),
     );
   }
 }

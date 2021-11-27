@@ -5,7 +5,7 @@ import 'package:travel_finder/pages/main_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(App());
+  runApp(const App());
 }
 
 class App extends StatelessWidget {
@@ -13,6 +13,6 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MainPage();
+    return const MainPage();
   }
 }
