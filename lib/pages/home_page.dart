@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travel_finder/components/option_card.dart';
-import 'package:travel_finder/components/option_content.dart';
+import 'package:travel_finder/constants.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,28 +14,32 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(child: SizedBox()),
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.only(top: 30.0),
+              child: Center(
+                child: Text(
+                  'What would you like to do?',
+                  textAlign: TextAlign.center,
+                  style: kHomePageTitleTextStyle,
+                ),
+              ),
+            ),
+          ),
           Expanded(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Expanded(
                   child: OptionCard(
-                    optionContent: OptionContent(
-                      title: 'Flights',
-                      icon: Icons.airplanemode_active,
-                    ),
+                    title: 'Find flights',
+                    image: AssetImage('graphics/flights.jpg'),
                   ),
                 ),
                 Expanded(
                   child: OptionCard(
-                    optionContent: OptionContent(
-                      title: 'Stays',
-                      icon: Icons.house,
-                    ),
+                    title: 'Find stays',
+                    image: AssetImage('graphics/stays.jpg'),
                   ),
                 ),
               ],
@@ -43,10 +47,8 @@ class _HomePageState extends State<HomePage> {
           ),
           Expanded(
             child: OptionCard(
-              optionContent: OptionContent(
-                title: 'Plan travel',
-                icon: Icons.calendar_today,
-              ),
+              title: 'Plan travel',
+              image: AssetImage('graphics/travel_plan.jpg'),
             ),
           ),
           Expanded(child: SizedBox()),
