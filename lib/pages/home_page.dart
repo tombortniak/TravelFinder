@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:travel_finder/components/option_card.dart';
-import 'package:travel_finder/constants.dart';
+import 'package:travel_finder/pages/flights_type_page.dart';
+import 'package:travel_finder/services/navigation.dart';
+import 'explore_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -10,49 +11,37 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _selectedBarItemIndex = 0;
+  final _pages = [ExplorePage(), FlightsTypePage()];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedBarItemIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.only(top: 30.0),
-              child: Center(
-                child: Text(
-                  'What would you like to do?',
-                  textAlign: TextAlign.center,
-                  style: kHomePageTitleTextStyle,
-                ),
-              ),
+    return MaterialApp(
+      home: Scaffold(
+        body: IndexedStack(
+          index: _selectedBarItemIndex,
+          children: [ExploreNavigator()],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedBarItemIndex,
+          onTap: _onItemTapped,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.explore),
+              label: 'Explore',
             ),
-          ),
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: OptionCard(
-                    title: 'Find flights',
-                    image: AssetImage('graphics/flights.jpg'),
-                  ),
-                ),
-                Expanded(
-                  child: OptionCard(
-                    title: 'Find stays',
-                    image: AssetImage('graphics/stays.jpg'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: OptionCard(
-              title: 'Plan travel',
-              image: AssetImage('graphics/travel_plan.jpg'),
-            ),
-          ),
-          Expanded(child: SizedBox()),
-        ],
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: 'Settings'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.info_outline_rounded), label: 'About'),
+          ],
+        ),
       ),
     );
   }

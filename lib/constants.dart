@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const kHomePageTitleTextStyle = TextStyle(
+const kTitleTextStyle = TextStyle(
   fontSize: 30.0,
   fontWeight: FontWeight.bold,
 );
