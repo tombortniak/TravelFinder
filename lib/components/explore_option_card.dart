@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:travel_finder/constants.dart';
 
-class OptionCard extends StatelessWidget {
+class ExploreOptionCard extends StatelessWidget {
   final String _title;
   final AssetImage _image;
   final VoidCallback _onTap;
 
-  OptionCard({required title, required image, required onTap})
+  ExploreOptionCard({required title, required image, required onTap})
       : _title = title,
         _image = image,
         _onTap = onTap;

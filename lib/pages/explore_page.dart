@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:travel_finder/components/option_card.dart';
+import 'package:travel_finder/components/explore_option_card.dart';
 import 'package:travel_finder/constants.dart';
 
 class ExplorePage extends StatefulWidget {
@@ -29,14 +29,14 @@ class _ExplorePageState extends State<ExplorePage> {
             child: Row(
               children: [
                 Expanded(
-                  child: OptionCard(
+                  child: ExploreOptionCard(
                     title: 'Find flights',
                     image: AssetImage('graphics/flights.jpg'),
-                    onTap: () => Navigator.pushNamed(context, '/flightsType'),
+                    onTap: () => Navigator.pushNamed(context, '/flightType'),
                   ),
                 ),
                 Expanded(
-                  child: OptionCard(
+                  child: ExploreOptionCard(
                     title: 'Find stays',
                     image: AssetImage('graphics/stays.jpg'),
                     onTap: () {},
@@ -46,7 +46,7 @@ class _ExplorePageState extends State<ExplorePage> {
             ),
           ),
           Expanded(
-            child: OptionCard(
+            child: ExploreOptionCard(
               title: 'Plan travel',
               image: AssetImage('graphics/travel_plan.jpg'),
               onTap: () {},

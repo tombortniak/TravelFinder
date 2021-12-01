@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:travel_finder/pages/flights_type_page.dart';
+import 'package:travel_finder/pages/flight_details_page.dart';
 import 'package:travel_finder/services/navigation.dart';
 import 'explore_page.dart';
 
@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedBarItemIndex = 0;
-  final _pages = [ExplorePage(), FlightsTypePage()];
+  final _pages = [ExplorePage()];
 
   void _onItemTapped(int index) {
     setState(() {
