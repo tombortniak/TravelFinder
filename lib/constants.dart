@@ -11,8 +11,8 @@ const kOptionCardTextStyle = TextStyle(
   fontWeight: FontWeight.w600,
 );
 
-const kFlightTypeTextStyle = TextStyle(
+const kFlightDetailsTitleTextStyle = TextStyle(
   fontSize: 20.0,
   color: Colors.black,
-  fontWeight: FontWeight.w400,
+  fontWeight: FontWeight.bold,
 );

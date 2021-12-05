@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:travel_finder/pages/flight_details_page.dart';
 import 'package:travel_finder/services/navigation.dart';
 import 'explore_page.dart';
 

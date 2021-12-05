@@ -35,5 +35,3 @@ class Airport {
   String get country => _country;
   String get iataCode => _iataCode;
 }
-
-enum FlightType { oneWay, roundTrip }

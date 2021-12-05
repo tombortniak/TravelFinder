@@ -20,7 +20,6 @@ class ExploreOptionCard extends StatelessWidget {
         decoration: BoxDecoration(boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
             blurRadius: 20.0,
           )
         ]),
@@ -47,21 +46,17 @@ class ExploreOptionCard extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: Hero(
-                tag: 'Flights',
-                child: Container(
-                  margin:
-                      EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(10.0),
-                      bottomRight: Radius.circular(10.0),
-                    ),
-                    image: DecorationImage(
-                      image: _image,
-                      fit: BoxFit.cover,
-                    ),
+              child: Container(
+                margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
+                padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10.0),
+                    bottomRight: Radius.circular(10.0),
+                  ),
+                  image: DecorationImage(
+                    image: _image,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),

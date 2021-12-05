@@ -32,7 +32,7 @@ class _ExplorePageState extends State<ExplorePage> {
                   child: ExploreOptionCard(
                     title: 'Find flights',
                     image: AssetImage('graphics/flights.jpg'),
-                    onTap: () => Navigator.pushNamed(context, '/flightType'),
+                    onTap: () => Navigator.pushNamed(context, '/flightSearch'),
                   ),
                 ),
                 Expanded(
@@ -47,8 +47,8 @@ class _ExplorePageState extends State<ExplorePage> {
           ),
           Expanded(
             child: ExploreOptionCard(
-              title: 'Plan travel',
-              image: AssetImage('graphics/travel_plan.jpg'),
+              title: 'Plan trip',
+              image: AssetImage('graphics/trip_plan.jpg'),
               onTap: () {},
             ),
           ),
