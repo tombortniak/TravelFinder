@@ -4,19 +4,21 @@ import 'package:travel_finder/pages/airport_selection_page.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:travel_finder/components/selection_sheet.dart';
 
-class SelectionButton extends StatefulWidget {
+class FlightSearchField extends StatefulWidget {
   final String _placeholder;
   final FaIcon _icon;
+  final VoidCallback _onTap;
 
-  SelectionButton({required placeholder, required icon})
+  FlightSearchField({required placeholder, required icon, required onTap})
       : _placeholder = placeholder,
-        _icon = icon;
+        _icon = icon,
+        _onTap = onTap;
 
   @override
-  _SelectionButtonState createState() => _SelectionButtonState();
+  _FlightSearchFieldState createState() => _FlightSearchFieldState();
 }
 
-class _SelectionButtonState extends State<SelectionButton> {
+class _FlightSearchFieldState extends State<FlightSearchField> {
   String? _value;
 
   @override
@@ -44,14 +46,7 @@ class _SelectionButtonState extends State<SelectionButton> {
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
-      onTap: () {
-        showMaterialModalBottomSheet(
-          context: context,
-          builder: (context) => AirportSelectionPage(),
-          expand: false,
-          isDismissible: false,
-        );
-      },
+      onTap: widget._onTap,
     );
   }
 }

@@ -12,21 +12,19 @@ class SelectionSheet extends StatefulWidget {
 class _SelectionSheetState extends State<SelectionSheet> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-          color: Colors.white,
-          child: Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  CloseButton(),
-                ],
-              ),
-              widget._child
-            ],
-          )),
-    );
+    return Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                CloseButton(),
+              ],
+            ),
+            widget._child
+          ],
+        ));
   }
 }
