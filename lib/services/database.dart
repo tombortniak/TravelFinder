@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_finder/models/airport.dart';
 
 class AirportFinder {
   List<Airport> _availableAirports = [];
@@ -9,29 +10,18 @@ class AirportFinder {
     final List<DocumentSnapshot> documents = result.docs;
 
     documents.forEach((doc) {
-      var airportName = doc['airportName'];
+      var airportName = doc['name'];
       var country = doc['country'];
+      var countryAlpha2Code = doc['countryAlpha2Code'];
       var iataCode = doc['iataCode'];
       Airport airport = Airport(
-          airportName: airportName, country: country, iataCode: iataCode);
+          name: airportName,
+          country: country,
+          countryAlpha2Code: countryAlpha2Code,
+          iataCode: iataCode);
       _availableAirports.add(airport);
     });
 
     return _availableAirports;
   }
-}
-
-class Airport {
-  final String _airportName;
-  final String _country;
-  final String _iataCode;
-
-  Airport({required airportName, required country, required iataCode})
-      : _airportName = airportName,
-        _country = country,
-        _iataCode = iataCode;
-
-  String get airportName => _airportName;
-  String get country => _country;
-  String get iataCode => _iataCode;
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:travel_finder/pages/explore_page.dart';
 import 'package:travel_finder/pages/flight_search_page.dart';
 
+GlobalKey<NavigatorState> exploreNavigatorKey = GlobalKey<NavigatorState>();
+
 class ExploreNavigator extends StatefulWidget {
   const ExploreNavigator({Key? key}) : super(key: key);
 
@@ -13,6 +15,7 @@ class _ExploreNavigatorState extends State<ExploreNavigator> {
   @override
   Widget build(BuildContext context) {
     return Navigator(
+      key: exploreNavigatorKey,
       onGenerateRoute: (RouteSettings settings) {
         return MaterialPageRoute(
             settings: settings,

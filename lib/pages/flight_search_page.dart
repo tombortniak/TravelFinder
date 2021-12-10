@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:travel_finder/pages/airport_selection_page.dart';
+import 'package:travel_finder/pages/airport_country_selection_page.dart';
 import 'package:travel_finder/components/flight_search_field.dart';
 import 'package:travel_finder/components/search_button.dart';
-import 'package:travel_finder/services/airports.dart';
+import 'package:travel_finder/services/database.dart';
+import 'package:travel_finder/models/airport.dart';
 
 class FlightSearchPage extends StatefulWidget {
   final AirportFinder _airportFinder = AirportFinder();
@@ -49,9 +50,11 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                             color: Colors.grey,
                           ),
                           onTap: () {
-                            showBarModalBottomSheet(
+                            showMaterialModalBottomSheet(
+                                backgroundColor: Colors.transparent,
                                 context: context,
-                                builder: (context) => AirportSelectionPage(
+                                builder: (context) =>
+                                    AirportCountrySelectionPage(
                                       airports: _availableAirports,
                                     ));
                           },
@@ -63,9 +66,11 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                             color: Colors.grey,
                           ),
                           onTap: () {
-                            showBarModalBottomSheet(
+                            showMaterialModalBottomSheet(
+                                backgroundColor: Colors.transparent,
                                 context: context,
-                                builder: (context) => AirportSelectionPage(
+                                builder: (context) =>
+                                    AirportCountrySelectionPage(
                                       airports: _availableAirports,
                                     ));
                           },
@@ -95,72 +100,69 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                           ],
                         ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(
-                              flex: 3,
-                              child: Container(
-                                child: ToggleButtons(
-                                  color: Colors.white,
-                                  borderColor: Colors.blue,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  fillColor: Colors.white,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: 10.0,
-                                        ),
-                                        Column(
-                                          children: [
-                                            FaIcon(FontAwesomeIcons
-                                                .longArrowAltRight),
-                                            Text('One way'),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          width: 10.0,
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: 10.0,
-                                        ),
-                                        Column(
-                                          children: [
-                                            FaIcon(
-                                                FontAwesomeIcons.exchangeAlt),
-                                            Text('Round trip'),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          width: 10.0,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                  isSelected: _isSelected,
-                                  onPressed: (int index) {
-                                    setState(() {
-                                      for (int buttonIndex = 0;
-                                          buttonIndex < _isSelected.length;
-                                          buttonIndex++) {
-                                        if (buttonIndex == index) {
-                                          _isSelected[buttonIndex] =
-                                              !_isSelected[buttonIndex];
-                                        } else {
-                                          _isSelected[buttonIndex] = false;
-                                        }
+                            Container(
+                              child: ToggleButtons(
+                                color: Colors.white,
+                                borderColor: Colors.blue,
+                                borderRadius: BorderRadius.circular(10.0),
+                                fillColor: Colors.white,
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 10.0,
+                                      ),
+                                      Column(
+                                        children: [
+                                          FaIcon(FontAwesomeIcons
+                                              .longArrowAltRight),
+                                          Text('One way'),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        width: 10.0,
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 10.0,
+                                      ),
+                                      Column(
+                                        children: [
+                                          FaIcon(FontAwesomeIcons.exchangeAlt),
+                                          Text('Round trip'),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        width: 10.0,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                                isSelected: _isSelected,
+                                onPressed: (int index) {
+                                  setState(() {
+                                    for (int buttonIndex = 0;
+                                        buttonIndex < _isSelected.length;
+                                        buttonIndex++) {
+                                      if (buttonIndex == index) {
+                                        _isSelected[buttonIndex] =
+                                            !_isSelected[buttonIndex];
+                                      } else {
+                                        _isSelected[buttonIndex] = false;
                                       }
-                                    });
-                                  },
-                                ),
-                                margin: EdgeInsets.all(15.0),
+                                    }
+                                  });
+                                },
                               ),
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 15.0, vertical: 5.0),
                             ),
                             Expanded(
-                              flex: 2,
                               child: SearchButton(),
                             )
                           ],
