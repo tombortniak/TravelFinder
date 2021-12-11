@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:travel_finder/models/departure_airport.dart';
 import 'package:travel_finder/pages/airport_country_selection_page.dart';
 import 'package:travel_finder/components/flight_search_field.dart';
 import 'package:travel_finder/components/search_button.dart';
 import 'package:travel_finder/services/database.dart';
 import 'package:travel_finder/models/airport.dart';
+import 'package:travel_finder/models/arrival_airport.dart';
 
 class FlightSearchPage extends StatefulWidget {
   final AirportFinder _airportFinder = AirportFinder();
@@ -44,7 +46,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                     child: Column(
                       children: [
                         FlightSearchField(
-                          placeholder: 'Departure airport',
+                          text: DepartureAirportText(),
                           icon: FaIcon(
                             FontAwesomeIcons.planeDeparture,
                             color: Colors.grey,
@@ -55,12 +57,12 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                 context: context,
                                 builder: (context) =>
                                     AirportCountrySelectionPage(
-                                      airports: _availableAirports,
-                                    ));
+                                        airports: _availableAirports,
+                                        isArrivalAirport: false));
                           },
                         ),
                         FlightSearchField(
-                          placeholder: 'Arrival airport',
+                          text: ArrivalAirportText(),
                           icon: FaIcon(
                             FontAwesomeIcons.planeArrival,
                             color: Colors.grey,
@@ -71,15 +73,15 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                 context: context,
                                 builder: (context) =>
                                     AirportCountrySelectionPage(
-                                      airports: _availableAirports,
-                                    ));
+                                        airports: _availableAirports,
+                                        isArrivalAirport: true));
                           },
                         ),
                         Row(
                           children: [
                             Expanded(
                               child: FlightSearchField(
-                                placeholder: 'Departure date',
+                                text: Text('Departure date'),
                                 icon: FaIcon(
                                   FontAwesomeIcons.calendar,
                                   color: Colors.grey,
@@ -89,7 +91,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                             ),
                             Expanded(
                               child: FlightSearchField(
-                                placeholder: 'Return date',
+                                text: Text('Arrival date'),
                                 icon: FaIcon(
                                   FontAwesomeIcons.calendar,
                                   color: Colors.grey,

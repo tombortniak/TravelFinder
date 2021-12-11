@@ -22,11 +22,11 @@ class _HomePageState extends State<HomePage> {
       _navigatorKeys[_selectedBarItemIndex]
           .currentState!
           .pop(_navigatorKeys[_selectedBarItemIndex].currentContext);
+      return Future.value(false);
     } else {
       SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+      return Future.value(true);
     }
-
-    return Future.value(false);
   }
 
   void _onItemTapped(int index) {
@@ -37,31 +37,29 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: WillPopScope(
-        onWillPop: _systemBackButtonPressed,
-        child: Scaffold(
-          body: SafeArea(
-            top: false,
-            child: IndexedStack(
-              index: _selectedBarItemIndex,
-              children: [ExploreNavigator()],
+    return WillPopScope(
+      onWillPop: _systemBackButtonPressed,
+      child: Scaffold(
+        body: SafeArea(
+          top: false,
+          child: IndexedStack(
+            index: _selectedBarItemIndex,
+            children: [ExploreNavigator()],
+          ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedBarItemIndex,
+          onTap: _onItemTapped,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.explore),
+              label: 'Explore',
             ),
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: _selectedBarItemIndex,
-            onTap: _onItemTapped,
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.explore),
-                label: 'Explore',
-              ),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.settings), label: 'Settings'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.info_outline_rounded), label: 'About'),
-            ],
-          ),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: 'Settings'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.info_outline_rounded), label: 'About'),
+          ],
         ),
       ),
     );
