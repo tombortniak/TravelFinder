@@ -18,4 +18,13 @@ class Airport {
   String get country => _country;
   String get countryAlpha2Code => _countryAlpha2Code;
   String get iataCode => _iataCode;
+
+  operator [](String attribute) {
+    return <String, dynamic>{
+      'name': _name,
+      'country': _country,
+      'countryAlphaCode': _countryAlpha2Code,
+      'iataCode': _iataCode
+    }[attribute];
+  }
 }
