@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:travel_finder/constants.dart';
 
 class ExploreOptionCard extends StatelessWidget {
   final String _title;
-  final AssetImage _image;
+  final IconData _icon;
   final VoidCallback _onTap;
 
-  ExploreOptionCard({required title, required image, required onTap})
+  ExploreOptionCard({required title, required icon, required onTap})
       : _title = title,
-        _image = image,
+        _icon = icon,
         _onTap = onTap;
 
   @override
@@ -16,53 +17,33 @@ class ExploreOptionCard extends StatelessWidget {
     return InkWell(
       onTap: _onTap,
       child: Container(
-        margin: EdgeInsets.all(10.0),
-        decoration: BoxDecoration(boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            blurRadius: 20.0,
-          )
-        ]),
+        margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+        padding: EdgeInsets.all(5.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              padding: EdgeInsets.all(5.0),
-              margin: EdgeInsets.only(
-                left: 10.0,
-                right: 10.0,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10.0),
-                  topRight: Radius.circular(10.0),
-                ),
-              ),
-              child: Text(
-                _title,
-                style: kOptionCardTextStyle,
-                textAlign: TextAlign.start,
-              ),
+            Text(
+              _title,
+              style: kOptionCardTextStyle,
+              textAlign: TextAlign.center,
             ),
-            Expanded(
-              child: Container(
-                margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                padding: EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10.0),
-                    bottomRight: Radius.circular(10.0),
-                  ),
-                  image: DecorationImage(
-                    image: _image,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
+            SizedBox(
+              height: 15.0,
+            ),
+            Icon(
+              _icon,
+              size: 50.0,
+              color: Colors.black,
+            ),
+            SizedBox(
+              height: 15.0,
             ),
           ],
         ),
+        decoration: BoxDecoration(
+            border: Border.all(width: 3.0, color: Colors.deepPurple),
+            borderRadius: BorderRadius.circular(10.0)),
       ),
     );
   }

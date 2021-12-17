@@ -33,7 +33,7 @@ class _FlightSearchFieldState extends State<FlightSearchField> {
           ],
         ),
         margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 2.0),
-        padding: EdgeInsets.all(10.0),
+        padding: EdgeInsets.all(25.0),
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: Colors.grey),

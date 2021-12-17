@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
+const kBaseRyanairUrl = 'https://services-api.ryanair.com/farfnd/3/';
+const kOneWayUrl = 'oneWayFares?';
+const kRoundTripUrl = 'roundTripFares?';
+
 const kTitleTextStyle = TextStyle(
   fontSize: 30.0,
   fontWeight: FontWeight.bold,
 );
 
 const kOptionCardTextStyle = TextStyle(
-  fontSize: 20.0,
-  color: Colors.white,
+  fontSize: 25.0,
+  color: Colors.black,
   fontWeight: FontWeight.w600,
 );
 

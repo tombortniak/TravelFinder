@@ -9,13 +9,13 @@ import 'package:provider/provider.dart';
 import 'package:travel_finder/models/departure_airport.dart';
 
 class AirportSelectionPage extends StatefulWidget {
-  final bool _isArrivalAirport;
+  final bool _arrivalAirport;
   final List<Airport> _airports;
   final Map<String, String> _alpha2CodesByCountries = {};
 
   AirportSelectionPage({required airports, required isArrivalAirport})
       : _airports = airports,
-        _isArrivalAirport = isArrivalAirport {
+        _arrivalAirport = isArrivalAirport {
     groupCountriesWithAlpha2Codes();
   }
 
@@ -32,7 +32,7 @@ class AirportSelectionPage extends StatefulWidget {
 }
 
 class _AirportSelectionPageState extends State<AirportSelectionPage> {
-  TextEditingController editingController = TextEditingController();
+  TextEditingController _editingController = TextEditingController();
   List<Airport> _airports = [];
 
   String getAlpha2CodeFromCountryName(String countryName) {
@@ -79,73 +79,103 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
             AppBar(
               title: Text('Choose airport'),
               centerTitle: true,
+              backgroundColor: Color.fromRGBO(172, 193, 255, 1),
             ),
-            Container(
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      onChanged: (value) {
-                        filterSearchResults(value);
-                      },
-                      controller: editingController,
-                      decoration: InputDecoration(
-                          labelText: "Search",
-                          hintText: "Search",
-                          prefixIcon: Icon(Icons.search),
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(25.0)))),
-                    ),
-                  ),
-                ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: (value) {
+                  filterSearchResults(value);
+                },
+                controller: _editingController,
+                decoration: InputDecoration(
+                    labelText: 'Search',
+                    hintText: 'Search',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: GroupedListView<dynamic, String>(
-                  controller: ModalScrollController.of(context),
-                  shrinkWrap: true,
-                  elements: _airports,
-                  groupBy: (airport) => airport['country'],
-                  groupComparator: (value1, value2) => value2.compareTo(value1),
-                  itemComparator: (item1, item2) => item2['name'].compareTo(
-                    item1['name'],
-                  ),
-                  order: GroupedListOrder.DESC,
-                  useStickyGroupSeparators: true,
-                  groupSeparatorBuilder: (String country) => Container(
-                    child: Text(
-                      '${EmojiConverter.fromAlpha2CountryCode(getAlpha2CodeFromCountryName(country))} $country',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                          fontSize: 20.0, fontWeight: FontWeight.bold),
-                    ),
-                    margin:
-                        EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-                  ),
-                  itemBuilder: (context, airport) {
-                    return Card(
-                      elevation: 4.0,
-                      child: ListTile(
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 10.0),
-                        title: Text(airport['name']),
-                        trailing: Text(airport['iataCode']),
-                        onTap: () {
-                          if (widget._isArrivalAirport) {
-                            context.read<ArrivalAirport>().setAirport(airport);
-                          } else {
-                            context
-                                .read<DepartureAirport>()
-                                .setAirport(airport);
-                          }
-                          Navigator.pop(context);
-                        },
+            widget._arrivalAirport
+                ? Container(
+                    child: ListTile(
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 10.0),
+                      leading: Text(
+                        '🌍',
+                        style: TextStyle(fontSize: 30.0),
                       ),
-                    );
-                  },
+                      title: Text(
+                        'Anywhere',
+                        style: TextStyle(
+                            fontSize: 20.0, fontWeight: FontWeight.bold),
+                      ),
+                      onTap: () {
+                        context.read<ArrivalAirport>().setAirport(Airport(
+                            name: 'Anywhere',
+                            country: '',
+                            countryAlpha2Code: '',
+                            iataCode: ''));
+                        Navigator.pop(context);
+                      },
+                    ),
+                  )
+                : SizedBox.shrink(),
+            Expanded(
+              child: Container(
+                child: SingleChildScrollView(
+                  child: GroupedListView<dynamic, String>(
+                    controller: ModalScrollController.of(context),
+                    shrinkWrap: true,
+                    elements: _airports,
+                    groupBy: (airport) => airport['country'],
+                    groupComparator: (value1, value2) =>
+                        value2.compareTo(value1),
+                    itemComparator: (item1, item2) => item2['name'].compareTo(
+                      item1['name'],
+                    ),
+                    order: GroupedListOrder.DESC,
+                    groupSeparatorBuilder: (String country) => Container(
+                      child: ListTile(
+                        leading: Text(
+                          EmojiConverter.fromAlpha2CountryCode(
+                              getAlpha2CodeFromCountryName(country)),
+                          style: TextStyle(fontSize: 30.0),
+                        ),
+                        title: Text(
+                          country,
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              fontSize: 20.0, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      margin:
+                          EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),
+                    ),
+                    itemBuilder: (context, airport) {
+                      return Card(
+                        elevation: 4.0,
+                        child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 10.0),
+                          title: Text(airport['name']),
+                          trailing: Text(airport['iataCode']),
+                          onTap: () {
+                            if (widget._arrivalAirport) {
+                              context
+                                  .read<ArrivalAirport>()
+                                  .setAirport(airport);
+                            } else {
+                              context
+                                  .read<DepartureAirport>()
+                                  .setAirport(airport);
+                            }
+                            Navigator.pop(context);
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

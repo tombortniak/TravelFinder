@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:travel_finder/constants.dart';
 import 'package:travel_finder/models/departure_airport.dart';
 import 'package:travel_finder/pages/airport_selection_page.dart';
 import 'package:travel_finder/pages/date_selection_page.dart';
@@ -9,6 +10,9 @@ import 'package:travel_finder/components/flight_search_field.dart';
 import 'package:travel_finder/services/database.dart';
 import 'package:travel_finder/models/airport.dart';
 import 'package:travel_finder/models/arrival_airport.dart';
+import 'package:travel_finder/services/json_converter.dart';
+import 'package:travel_finder/services/http_manager.dart';
+import 'package:provider/provider.dart';
 
 class FlightSearchPage extends StatefulWidget {
   final AirportFinder _airportFinder = AirportFinder();
@@ -21,7 +25,6 @@ class FlightSearchPage extends StatefulWidget {
 
 class _FlightSearchPageState extends State<FlightSearchPage> {
   List<Airport>? _availableAirports;
-  List<bool> _isSelected = [true, false];
 
   Future<List<Airport>> getAvailableAirports() async {
     return widget._airportFinder.getAvailableAirports();
@@ -35,15 +38,15 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
           if (snapshot.hasData) {
             _availableAirports = snapshot.data;
             return Container(
-              color: Colors.white,
               child: Column(
                 children: [
                   AppBar(
-                    title: Text('Flight search'),
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
                   ),
-                  Container(
-                    color: Colors.blue,
+                  Expanded(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         FlightSearchField(
                           text: DepartureAirportText(),
@@ -58,6 +61,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                               builder: (context) => AirportSelectionPage(
                                   airports: _availableAirports,
                                   isArrivalAirport: false),
+                              expand: false,
                             );
                           },
                         ),
@@ -67,118 +71,71 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                             FontAwesomeIcons.planeArrival,
                             color: Colors.grey,
                           ),
+                          onTap: () async {
+                            if (context.read<DepartureAirport>().airport.name !=
+                                'Departure airport') {
+                              var departureAirportIataCode = context
+                                  .read<DepartureAirport>()
+                                  .airport
+                                  .iataCode;
+
+                              HttpManager http = HttpManager(
+                                  url:
+                                      '$kBaseRyanairUrl$kOneWayUrl&departureAirportIataCode=$departureAirportIataCode&inboundDepartureDateFrom=2021-12-20&inboundDepartureDateTo=2022-12-20&market=en-gb&outboundDepartureDateFrom=2021-12-20&outboundDepartureDateTo=2022-12-20&priceValueTo=1000');
+
+                              var data = await http.getData();
+                              JsonConverter converter = JsonConverter();
+                              var airports = converter.convertToAirports(data);
+
+                              showMaterialModalBottomSheet(
+                                  backgroundColor: Colors.transparent,
+                                  context: context,
+                                  builder: (context) => AirportSelectionPage(
+                                      airports: airports,
+                                      isArrivalAirport: true),
+                                  expand: false);
+                            }
+                          },
+                        ),
+                        FlightSearchField(
+                          text: Text('Dates'),
+                          icon: FaIcon(
+                            FontAwesomeIcons.calendar,
+                            color: Colors.grey,
+                          ),
                           onTap: () {
                             showMaterialModalBottomSheet(
-                              backgroundColor: Colors.transparent,
                               context: context,
-                              builder: (context) => AirportSelectionPage(
-                                  airports: _availableAirports,
-                                  isArrivalAirport: true),
+                              builder: (context) => DateSelectionPage(),
+                              backgroundColor: Colors.transparent,
+                              expand: false,
                             );
                           },
                         ),
                         Row(
                           children: [
                             Expanded(
-                              child: FlightSearchField(
-                                text: Text('Departure date'),
-                                icon: FaIcon(
-                                  FontAwesomeIcons.calendar,
-                                  color: Colors.grey,
-                                ),
-                                onTap: () {
-                                  showMaterialModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => DateSelectionPage(),
-                                    backgroundColor: Colors.transparent,
-                                    expand: false,
-                                  );
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: FlightSearchField(
-                                text: Text('Return date'),
-                                icon: FaIcon(
-                                  FontAwesomeIcons.calendar,
-                                  color: Colors.grey,
-                                ),
-                                onTap: () {
-                                  showMaterialModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => DateSelectionPage(),
-                                    backgroundColor: Colors.transparent,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
+                              flex: 3,
                               child: Container(
-                                  child: ToggleButtons(
-                                    color: Colors.white,
-                                    borderColor: Colors.transparent,
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    fillColor: Colors.white,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 10.0,
-                                          ),
-                                          Column(
-                                            children: [
-                                              FaIcon(FontAwesomeIcons
-                                                  .longArrowAltRight),
-                                              Text('One way'),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            width: 10.0,
-                                          ),
-                                        ],
+                                child: ElevatedButton(
+                                  child: Text('Clear'),
+                                  onPressed: () {},
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.amber,
+                                      onPrimary: Colors.black,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(20.0),
+                                        ),
                                       ),
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 10.0,
-                                          ),
-                                          Column(
-                                            children: [
-                                              FaIcon(
-                                                  FontAwesomeIcons.exchangeAlt),
-                                              Text('Round trip'),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            width: 10.0,
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                    isSelected: _isSelected,
-                                    onPressed: (int index) {
-                                      setState(() {
-                                        for (int buttonIndex = 0;
-                                            buttonIndex < _isSelected.length;
-                                            buttonIndex++) {
-                                          if (buttonIndex == index) {
-                                            _isSelected[buttonIndex] = true;
-                                          } else {
-                                            _isSelected[buttonIndex] = false;
-                                          }
-                                        }
-                                      });
-                                    },
-                                  ),
-                                  margin: EdgeInsets.only(left: 15.0)),
+                                      padding: EdgeInsets.all(15.0)),
+                                ),
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 15.0, vertical: 5.0),
+                              ),
                             ),
                             Expanded(
-                              flex: 2,
+                              flex: 5,
                               child: Container(
                                 child: ElevatedButton(
                                   child: Text('Search'),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:travel_finder/components/explore_option_card.dart';
 import 'package:travel_finder/constants.dart';
 
@@ -13,45 +14,61 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Expanded(
-          child: Container(
-            margin: EdgeInsets.only(top: 70.0),
-            child: Text(
-              'What would you like to do?',
-              textAlign: TextAlign.center,
-              style: kTitleTextStyle,
+        Container(
+          margin: EdgeInsets.only(top: 100.0),
+          child: const Text(
+            'What would you like to do?',
+            textAlign: TextAlign.center,
+            style: kTitleTextStyle,
+          ),
+        ),
+        const SizedBox(
+          height: 100.0,
+        ),
+        Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: ExploreOptionCard(
+                    title: 'Find flights',
+                    icon: FontAwesomeIcons.plane,
+                    onTap: () => Navigator.pushNamed(context, '/flightSearch'),
+                  ),
+                ),
+                Expanded(
+                  child: ExploreOptionCard(
+                    title: 'Find stays',
+                    icon: FontAwesomeIcons.home,
+                    onTap: () {},
+                  ),
+                ),
+              ],
             ),
-          ),
-        ),
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: ExploreOptionCard(
-                  title: 'Find flights',
-                  image: AssetImage('graphics/flights.jpg'),
-                  onTap: () => Navigator.pushNamed(context, '/flightSearch'),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(),
                 ),
-              ),
-              Expanded(
-                child: ExploreOptionCard(
-                  title: 'Find stays',
-                  image: AssetImage('graphics/stays.jpg'),
-                  onTap: () {},
+                Expanded(
+                  flex: 5,
+                  child: ExploreOptionCard(
+                    title: 'Plan trip',
+                    icon: FontAwesomeIcons.solidCalendar,
+                    onTap: () {},
+                  ),
                 ),
-              ),
-            ],
-          ),
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(),
+                ),
+              ],
+            ),
+          ],
         ),
-        Expanded(
-          child: ExploreOptionCard(
-            title: 'Plan trip',
-            image: AssetImage('graphics/trip_plan.jpg'),
-            onTap: () {},
-          ),
-        ),
-        Expanded(child: SizedBox()),
       ],
     );
   }
