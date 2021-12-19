@@ -7,6 +7,11 @@ import 'package:travel_finder/models/airport.dart';
 import 'package:travel_finder/models/arrival_airport.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_finder/models/departure_airport.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:travel_finder/services/json_converter.dart';
+import 'package:travel_finder/services/http_manager.dart';
+import 'package:travel_finder/constants.dart';
+import 'package:travel_finder/models/available_destinations.dart';
 
 class AirportSelectionPage extends StatefulWidget {
   final bool _arrivalAirport;
@@ -63,6 +68,24 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
     }
   }
 
+  Future<List<Airport>> getAvailableDestinations() async {
+    List<Airport> airports = [];
+    if (context.read<DepartureAirport>().airport.name != 'Departure airport') {
+      var departureAirportIataCode =
+          context.read<DepartureAirport>().airport.iataCode;
+
+      HttpManager http = HttpManager(
+          url:
+              '$kBaseRyanairUrl$kOneWayUrl&departureAirportIataCode=$departureAirportIataCode&inboundDepartureDateFrom=2021-12-20&inboundDepartureDateTo=2022-12-20&market=en-gb&outboundDepartureDateFrom=2021-12-20&outboundDepartureDateTo=2022-12-20&priceValueTo=1000');
+
+      var data = await http.getData();
+      JsonConverter converter = JsonConverter();
+      airports = converter.convertToAirports(data);
+    }
+
+    return airports;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -79,7 +102,7 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
             AppBar(
               title: Text('Choose airport'),
               centerTitle: true,
-              backgroundColor: Color.fromRGBO(172, 193, 255, 1),
+              backgroundColor: Colors.blue,
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -160,17 +183,28 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
                               horizontal: 20.0, vertical: 10.0),
                           title: Text(airport['name']),
                           trailing: Text(airport['iataCode']),
-                          onTap: () {
+                          onTap: () async {
+                            Navigator.pop(context);
                             if (widget._arrivalAirport) {
                               context
                                   .read<ArrivalAirport>()
                                   .setAirport(airport);
                             } else {
-                              context
-                                  .read<DepartureAirport>()
-                                  .setAirport(airport);
+                              var currentAirport =
+                                  context.read<DepartureAirport>().airport;
+                              if (currentAirport != airport) {
+                                context
+                                    .read<DepartureAirport>()
+                                    .setAirport(airport);
+
+                                EasyLoading.show(status: 'Loading');
+                                var airports = await getAvailableDestinations();
+                                context
+                                    .read<AvailableDestinations>()
+                                    .setAvailableDestinations(airports);
+                                EasyLoading.dismiss();
+                              }
                             }
-                            Navigator.pop(context);
                           },
                         ),
                       );
