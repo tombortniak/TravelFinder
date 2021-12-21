@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:travel_finder/constants.dart';
+import 'package:travel_finder/models/date_range.dart';
 import 'package:travel_finder/models/departure_airport.dart';
 import 'package:travel_finder/pages/airport_selection_page.dart';
 import 'package:travel_finder/pages/date_selection_page.dart';
@@ -10,12 +10,11 @@ import 'package:travel_finder/components/flight_search_field.dart';
 import 'package:travel_finder/services/database.dart';
 import 'package:travel_finder/models/airport.dart';
 import 'package:travel_finder/models/arrival_airport.dart';
-import 'package:travel_finder/services/json_converter.dart';
-import 'package:travel_finder/services/http_manager.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:travel_finder/models/available_destinations.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'package:travel_finder/components/button.dart';
+import 'package:travel_finder/models/date_range.dart';
 
 class FlightSearchPage extends StatefulWidget {
   final AirportFinder _airportFinder = AirportFinder();
@@ -56,6 +55,13 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Container(
+                          child: Text(
+                            'Flight details',
+                            style: TextStyle(fontSize: 25.0),
+                          ),
+                          margin: EdgeInsets.only(bottom: 25.0),
+                        ),
                         FlightSearchField(
                           text: DepartureAirportText(),
                           icon: FaIcon(
@@ -95,7 +101,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                           children: [
                             Expanded(
                               child: FlightSearchField(
-                                text: Text('Departure'),
+                                text: DateRangeText(),
                                 icon: FaIcon(
                                   FontAwesomeIcons.calendar,
                                   color: Colors.grey,
@@ -110,26 +116,6 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                 },
                               ),
                             ),
-                            oneWay
-                                ? SizedBox.shrink()
-                                : Expanded(
-                                    child: FlightSearchField(
-                                      text: Text('Return'),
-                                      icon: FaIcon(
-                                        FontAwesomeIcons.calendar,
-                                        color: Colors.grey,
-                                      ),
-                                      onTap: () {
-                                        showMaterialModalBottomSheet(
-                                          context: context,
-                                          builder: (context) =>
-                                              DateSelectionPage(),
-                                          backgroundColor: Colors.transparent,
-                                          expand: false,
-                                        );
-                                      },
-                                    ),
-                                  ),
                           ],
                         ),
                         Row(
@@ -214,41 +200,34 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                             Expanded(
                               flex: 3,
                               child: Container(
-                                child: ElevatedButton(
-                                  child: Text('Clear'),
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.amber,
-                                      onPrimary: Colors.black,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(20.0),
-                                        ),
-                                      ),
-                                      padding: EdgeInsets.all(15.0)),
+                                child: Button(
+                                  text: 'Clear',
+                                  backgroundColor: Colors.amber,
+                                  textColor: Colors.black,
+                                  onPressed: () {
+                                    context
+                                        .read<DepartureAirport>()
+                                        .clearAirport();
+                                    context
+                                        .read<ArrivalAirport>()
+                                        .clearAirport();
+                                  },
                                 ),
                                 margin: EdgeInsets.symmetric(
-                                    horizontal: 15.0, vertical: 5.0),
+                                    horizontal: 20.0, vertical: 15.0),
                               ),
                             ),
                             Expanded(
                               flex: 5,
                               child: Container(
-                                child: ElevatedButton(
-                                  child: Text('Search'),
+                                child: Button(
+                                  text: 'Search',
+                                  backgroundColor: Colors.greenAccent,
+                                  textColor: Colors.black,
                                   onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.greenAccent,
-                                      onPrimary: Colors.black,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(20.0),
-                                        ),
-                                      ),
-                                      padding: EdgeInsets.all(15.0)),
                                 ),
                                 margin: EdgeInsets.symmetric(
-                                    horizontal: 15.0, vertical: 5.0),
+                                    horizontal: 20.0, vertical: 15.0),
                               ),
                             )
                           ],

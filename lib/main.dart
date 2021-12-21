@@ -6,6 +6,7 @@ import 'package:travel_finder/models/available_destinations.dart';
 import 'package:travel_finder/models/departure_airport.dart';
 import 'package:travel_finder/pages/home_page.dart';
 import 'package:provider/provider.dart';
+import 'models/date_range.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +21,10 @@ void main() async {
       ),
       ChangeNotifierProvider(
         create: (_) => AvailableDestinations(),
-      )
+      ),
+      ChangeNotifierProvider(
+        create: (_) => DateRange(),
+      ),
     ],
     child: const App(),
   ));

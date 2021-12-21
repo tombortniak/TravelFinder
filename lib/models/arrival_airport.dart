@@ -3,12 +3,23 @@ import 'package:travel_finder/models/airport.dart';
 import 'package:provider/provider.dart';
 
 class ArrivalAirport with ChangeNotifier {
-  String _value = 'Arrival airport';
+  Airport? _airport;
 
-  String get value => _value;
+  Airport get airport =>
+      _airport ??
+      Airport(
+          name: 'Arrival airport',
+          country: 'None',
+          countryAlpha2Code: 'None',
+          iataCode: 'None');
 
   void setAirport(Airport airport) {
-    _value = airport.name;
+    _airport = airport;
+    notifyListeners();
+  }
+
+  void clearAirport() {
+    _airport = null;
     notifyListeners();
   }
 }
@@ -19,9 +30,9 @@ class ArrivalAirportText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      context.watch<ArrivalAirport>().value,
+      context.watch<ArrivalAirport>().airport.name,
       style: TextStyle(
-        color: context.watch<ArrivalAirport>().value == 'Arrival airport'
+        color: context.watch<ArrivalAirport>().airport.name == 'Arrival airport'
             ? Colors.grey
             : Colors.black,
       ),

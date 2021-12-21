@@ -17,6 +17,11 @@ class DepartureAirport with ChangeNotifier {
     _airport = airport;
     notifyListeners();
   }
+
+  void clearAirport() {
+    _airport = null;
+    notifyListeners();
+  }
 }
 
 class DepartureAirportText extends StatelessWidget {
