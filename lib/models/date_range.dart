@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:travel_finder/models/airport.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 

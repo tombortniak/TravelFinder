@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:travel_finder/models/available_destinations.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:travel_finder/components/button.dart';
+import 'package:get/get.dart';
 
 class FlightSearchPage extends StatefulWidget {
   final AirportFinder _airportFinder = AirportFinder();
@@ -84,16 +85,29 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                             FontAwesomeIcons.planeArrival,
                             color: Colors.grey,
                           ),
-                          onTap: () async {
-                            showMaterialModalBottomSheet(
-                                backgroundColor: Colors.transparent,
-                                context: context,
-                                builder: (context) => AirportSelectionPage(
-                                    airports: context
-                                        .read<AvailableDestinations>()
-                                        .availableDestinations,
-                                    isArrivalAirport: true),
-                                expand: false);
+                          onTap: () {
+                            if (context.read<DepartureAirport>().airport ==
+                                null) {
+                              Get.snackbar(
+                                  'Error', 'Departure airport must be set',
+                                  backgroundColor: Colors.red,
+                                  colorText: Colors.white,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  snackStyle: SnackStyle.FLOATING,
+                                  isDismissible: true,
+                                  animationDuration:
+                                      Duration(milliseconds: 700));
+                            } else {
+                              showMaterialModalBottomSheet(
+                                  backgroundColor: Colors.transparent,
+                                  context: context,
+                                  builder: (context) => AirportSelectionPage(
+                                      airports: context
+                                          .read<AvailableDestinations>()
+                                          .availableDestinations,
+                                      isArrivalAirport: true),
+                                  expand: false);
+                            }
                           },
                         ),
                         Row(
@@ -224,7 +238,28 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                   text: 'Search',
                                   backgroundColor: Colors.greenAccent,
                                   textColor: Colors.black,
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    var departureAirport = context
+                                        .read<DepartureAirport>()
+                                        .airport;
+                                    var arrivalAirport =
+                                        context.read<ArrivalAirport>().airport;
+                                    var dateRange =
+                                        context.read<DateRange>().dateRange;
+                                    if (departureAirport == null ||
+                                        arrivalAirport == null ||
+                                        dateRange == null) {
+                                      Get.snackbar('Error',
+                                          'Departure airport, arrival airport and data range must be set',
+                                          backgroundColor: Colors.red,
+                                          colorText: Colors.white,
+                                          snackPosition: SnackPosition.BOTTOM,
+                                          snackStyle: SnackStyle.FLOATING,
+                                          isDismissible: true,
+                                          animationDuration:
+                                              Duration(milliseconds: 700));
+                                    }
+                                  },
                                 ),
                                 margin: EdgeInsets.symmetric(
                                     horizontal: 20.0, vertical: 15.0),

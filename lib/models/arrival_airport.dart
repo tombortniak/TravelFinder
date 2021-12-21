@@ -25,7 +25,7 @@ class ArrivalAirportText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       context.watch<ArrivalAirport>().airport == null
-          ? 'Departure airport'
+          ? 'Arrival airport'
           : context.watch<ArrivalAirport>().airport!.name,
       style: TextStyle(
         color: context.watch<ArrivalAirport>().airport == null

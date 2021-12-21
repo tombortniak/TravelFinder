@@ -7,6 +7,7 @@ import 'package:travel_finder/models/departure_airport.dart';
 import 'package:travel_finder/pages/home_page.dart';
 import 'package:provider/provider.dart';
 import 'models/date_range.dart';
+import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +43,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       home: HomePage(),
       builder: EasyLoading.init(),
     );

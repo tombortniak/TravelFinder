@@ -134,12 +134,7 @@ class _DateSelectionPageState extends State<DateSelectionPage> {
                                 child: Container(
                                   child: Text(
                                     text,
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    border: Border.all(color: Colors.black),
-                                    shape: BoxShape.circle,
+                                    style: TextStyle(color: Colors.amber),
                                   ),
                                   padding: EdgeInsets.all(10.0),
                                 ),
@@ -248,7 +243,7 @@ class _DateSelectionPageState extends State<DateSelectionPage> {
                           ),
                           Container(
                             child: Button(
-                              text: 'Confirm',
+                              text: 'Back',
                               textColor: Colors.white,
                               backgroundColor: Colors.blue,
                               onPressed: () {
