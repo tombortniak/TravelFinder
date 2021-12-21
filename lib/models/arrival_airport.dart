@@ -5,13 +5,7 @@ import 'package:provider/provider.dart';
 class ArrivalAirport with ChangeNotifier {
   Airport? _airport;
 
-  Airport get airport =>
-      _airport ??
-      Airport(
-          name: 'Arrival airport',
-          country: 'None',
-          countryAlpha2Code: 'None',
-          iataCode: 'None');
+  Airport? get airport => _airport;
 
   void setAirport(Airport airport) {
     _airport = airport;
@@ -30,9 +24,11 @@ class ArrivalAirportText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      context.watch<ArrivalAirport>().airport.name,
+      context.watch<ArrivalAirport>().airport == null
+          ? 'Departure airport'
+          : context.watch<ArrivalAirport>().airport!.name,
       style: TextStyle(
-        color: context.watch<ArrivalAirport>().airport.name == 'Arrival airport'
+        color: context.watch<ArrivalAirport>().airport == null
             ? Colors.grey
             : Colors.black,
       ),

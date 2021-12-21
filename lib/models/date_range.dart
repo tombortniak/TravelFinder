@@ -27,7 +27,10 @@ class DateRangeText extends StatelessWidget {
     return Text(
       context.watch<DateRange>().dateRange == null
           ? 'Data range'
-          : context.watch<DateRange>().dateRange.toString(),
+          : (context.watch<DateRange>().dateRange!.start ==
+                  context.watch<DateRange>().dateRange!.end
+              ? '${DateFormat('EEE, MMMM d').format(context.watch<DateRange>().dateRange!.start)}'
+              : '${DateFormat('EEE, MMMM d').format(context.watch<DateRange>().dateRange!.start)} - ${DateFormat('EEE, MMMM d').format(context.watch<DateRange>().dateRange!.end)}'),
       style: TextStyle(
         color: context.watch<DateRange>().dateRange == null
             ? Colors.grey

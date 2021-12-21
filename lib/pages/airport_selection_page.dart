@@ -70,9 +70,9 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
 
   Future<List<Airport>> getAvailableDestinations() async {
     List<Airport> airports = [];
-    if (context.read<DepartureAirport>().airport.name != 'Departure airport') {
+    if (context.read<DepartureAirport>().airport != null) {
       var departureAirportIataCode =
-          context.read<DepartureAirport>().airport.iataCode;
+          context.read<DepartureAirport>().airport?.iataCode;
 
       HttpManager http = HttpManager(
           url:

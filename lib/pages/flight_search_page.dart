@@ -14,7 +14,6 @@ import 'package:provider/provider.dart';
 import 'package:travel_finder/models/available_destinations.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:travel_finder/components/button.dart';
-import 'package:travel_finder/models/date_range.dart';
 
 class FlightSearchPage extends StatefulWidget {
   final AirportFinder _airportFinder = AirportFinder();
@@ -211,6 +210,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                     context
                                         .read<ArrivalAirport>()
                                         .clearAirport();
+                                    context.read<DateRange>().clearDateRange();
                                   },
                                 ),
                                 margin: EdgeInsets.symmetric(
