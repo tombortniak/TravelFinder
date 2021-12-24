@@ -13,63 +13,42 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: 100.0),
-          child: const Text(
-            'What would you like to do?',
-            textAlign: TextAlign.center,
-            style: kTitleTextStyle,
-          ),
-        ),
-        const SizedBox(
-          height: 100.0,
-        ),
-        Column(
+    return SafeArea(
+      child: Container(
+        margin: EdgeInsets.all(5.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: ExploreOptionCard(
-                    title: 'Find flights',
-                    icon: FontAwesomeIcons.plane,
-                    onTap: () => Navigator.pushNamed(context, '/flightSearch'),
-                  ),
-                ),
-                Expanded(
-                  child: ExploreOptionCard(
-                    title: 'Find stays',
-                    icon: FontAwesomeIcons.home,
-                    onTap: () {},
-                  ),
-                ),
-              ],
+            Text(
+              'What would you like to do?',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headline1,
             ),
-            Row(
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10.0,
+              runSpacing: 10.0,
               children: [
-                Expanded(
-                  flex: 2,
-                  child: SizedBox(),
+                ExploreOptionCard(
+                  title: 'Find flights',
+                  icon: FontAwesomeIcons.plane,
+                  onTap: () => Navigator.pushNamed(context, '/flightSearch'),
                 ),
-                Expanded(
-                  flex: 5,
-                  child: ExploreOptionCard(
-                    title: 'Plan trip',
-                    icon: FontAwesomeIcons.solidCalendar,
-                    onTap: () {},
-                  ),
+                ExploreOptionCard(
+                  title: 'Find stays',
+                  icon: FontAwesomeIcons.home,
+                  onTap: () {},
                 ),
-                Expanded(
-                  flex: 2,
-                  child: SizedBox(),
+                ExploreOptionCard(
+                  title: 'Plan trip',
+                  icon: FontAwesomeIcons.solidCalendar,
+                  onTap: () {},
                 ),
               ],
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }

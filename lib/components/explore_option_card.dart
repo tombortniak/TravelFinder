@@ -16,15 +16,16 @@ class ExploreOptionCard extends StatelessWidget {
     return InkWell(
       onTap: _onTap,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
         padding: EdgeInsets.all(5.0),
+        width: 150.0,
+        height: 150.0,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
               _title,
-              style: kOptionCardTextStyle,
+              style: Theme.of(context).textTheme.headline3,
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -32,7 +33,7 @@ class ExploreOptionCard extends StatelessWidget {
             ),
             Icon(
               _icon,
-              size: 50.0,
+              size: 40.0,
               color: Colors.black,
             ),
             SizedBox(

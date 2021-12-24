@@ -12,7 +12,7 @@ class ArrivalAirport with ChangeNotifier {
     notifyListeners();
   }
 
-  void clearAirport() {
+  void resetAirport() {
     _airport = null;
     notifyListeners();
   }
@@ -27,11 +27,9 @@ class ArrivalAirportText extends StatelessWidget {
       context.watch<ArrivalAirport>().airport == null
           ? 'Arrival airport'
           : context.watch<ArrivalAirport>().airport!.name,
-      style: TextStyle(
-        color: context.watch<ArrivalAirport>().airport == null
-            ? Colors.grey
-            : Colors.black,
-      ),
+      style: context.watch<ArrivalAirport>().airport != null
+          ? Theme.of(context).textTheme.bodyText1
+          : Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.grey),
     );
   }
 }

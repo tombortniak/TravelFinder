@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:travel_finder/constants.dart';
 import 'package:travel_finder/models/date_range.dart';
 import 'package:travel_finder/models/departure_airport.dart';
 import 'package:travel_finder/pages/airport_selection_page.dart';
@@ -14,7 +15,6 @@ import 'package:provider/provider.dart';
 import 'package:travel_finder/models/available_destinations.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:travel_finder/components/button.dart';
-import 'package:get/get.dart';
 
 class FlightSearchPage extends StatefulWidget {
   final AirportFinder _airportFinder = AirportFinder();
@@ -27,12 +27,37 @@ class FlightSearchPage extends StatefulWidget {
 
 class _FlightSearchPageState extends State<FlightSearchPage> {
   List<Airport>? _availableAirports;
-  List<bool> isSelected = [true, false];
-  double _currentSliderValue = 100;
-  bool oneWay = true;
+  List<bool> _isSelected = [true, false];
+  double _currentBudgetSliderValue = 100.0;
+  bool _oneWay = true;
 
   Future<List<Airport>> getAvailableAirports() async {
     return widget._airportFinder.getAvailableAirports();
+  }
+
+  void resetDepartureAirportField() {
+    context.read<DepartureAirport>().resetAirport();
+  }
+
+  void resetArrivalAirportField() {
+    context.read<ArrivalAirport>().resetAirport();
+  }
+
+  void resetDateRangeField() {
+    context.read<DateRange>().resetDateRange();
+  }
+
+  void resetFlightTypeToggleButton() {
+    setState(() {
+      _isSelected[FlightType.oneWay.index] = true;
+      _isSelected[FlightType.roundTrip.index] = false;
+    });
+  }
+
+  void resetBudgetSlider() {
+    setState(() {
+      _currentBudgetSliderValue = 150.0;
+    });
   }
 
   @override
@@ -52,68 +77,77 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                     elevation: 0,
                   ),
                   Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          child: Text(
+                    child: Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 10.0,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
                             'Flight details',
-                            style: TextStyle(fontSize: 25.0),
+                            style: Theme.of(context).textTheme.headline2,
                           ),
-                          margin: EdgeInsets.only(bottom: 25.0),
-                        ),
-                        FlightSearchField(
-                          text: DepartureAirportText(),
-                          icon: FaIcon(
-                            FontAwesomeIcons.planeDeparture,
-                            color: Colors.grey,
-                          ),
-                          onTap: () {
-                            showMaterialModalBottomSheet(
-                              backgroundColor: Colors.transparent,
-                              context: context,
-                              builder: (context) => AirportSelectionPage(
-                                  airports: _availableAirports,
-                                  isArrivalAirport: false),
-                              expand: false,
-                            );
-                          },
-                        ),
-                        FlightSearchField(
-                          text: ArrivalAirportText(),
-                          icon: FaIcon(
-                            FontAwesomeIcons.planeArrival,
-                            color: Colors.grey,
-                          ),
-                          onTap: () {
-                            if (context.read<DepartureAirport>().airport ==
-                                null) {
-                              Get.snackbar(
-                                  'Error', 'Departure airport must be set',
-                                  backgroundColor: Colors.red,
-                                  colorText: Colors.white,
-                                  snackPosition: SnackPosition.BOTTOM,
-                                  snackStyle: SnackStyle.FLOATING,
-                                  isDismissible: true,
-                                  animationDuration:
-                                      Duration(milliseconds: 700));
-                            } else {
-                              showMaterialModalBottomSheet(
-                                  backgroundColor: Colors.transparent,
-                                  context: context,
-                                  builder: (context) => AirportSelectionPage(
-                                      airports: context
-                                          .read<AvailableDestinations>()
-                                          .availableDestinations,
-                                      isArrivalAirport: true),
-                                  expand: false);
-                            }
-                          },
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: FlightSearchField(
+                          Column(
+                            children: [
+                              FlightSearchField(
+                                text: DepartureAirportText(),
+                                icon: FaIcon(
+                                  FontAwesomeIcons.planeDeparture,
+                                  color: Colors.grey,
+                                ),
+                                onTap: () {
+                                  showMaterialModalBottomSheet(
+                                    backgroundColor: Colors.transparent,
+                                    context: context,
+                                    builder: (context) => AirportSelectionPage(
+                                      airports: _availableAirports,
+                                      isArrivalAirport: false,
+                                    ),
+                                  );
+                                },
+                              ),
+                              FlightSearchField(
+                                text: ArrivalAirportText(),
+                                icon: FaIcon(
+                                  FontAwesomeIcons.planeArrival,
+                                  color: Colors.grey,
+                                ),
+                                onTap: () {
+                                  if (context
+                                          .read<DepartureAirport>()
+                                          .airport ==
+                                      null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Departure airport must be set',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(color: Colors.white),
+                                        ),
+                                        duration: Duration(seconds: 2),
+                                        backgroundColor: Colors.red,
+                                        padding: EdgeInsets.all(20.0),
+                                      ),
+                                    );
+                                  } else {
+                                    showMaterialModalBottomSheet(
+                                      backgroundColor: Colors.transparent,
+                                      context: context,
+                                      builder: (context) =>
+                                          AirportSelectionPage(
+                                              airports: context
+                                                  .read<AvailableDestinations>()
+                                                  .availableDestinations,
+                                              isArrivalAirport: true),
+                                    );
+                                  }
+                                },
+                              ),
+                              FlightSearchField(
                                 text: DateRangeText(),
                                 icon: FaIcon(
                                   FontAwesomeIcons.calendar,
@@ -124,150 +158,173 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                     context: context,
                                     builder: (context) => DateSelectionPage(),
                                     backgroundColor: Colors.transparent,
-                                    expand: false,
                                   );
                                 },
                               ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 15.0, vertical: 10.0),
-                                child: SleekCircularSlider(
-                                  appearance: CircularSliderAppearance(
-                                    customColors: CustomSliderColors(
-                                      dotColor: Colors.blue,
-                                      progressBarColor: Colors.blue,
-                                      trackColor: Colors.grey,
-                                    ),
-                                    customWidths: CustomSliderWidths(
-                                        progressBarWidth: 10.0,
-                                        handlerSize: 10.0),
-                                  ),
-                                  min: 1,
-                                  max: 500,
-                                  initialValue: 150,
-                                  onChange: (double value) {
-                                    _currentSliderValue = value;
-                                  },
-                                  innerWidget: (double value) {
-                                    return Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text('Budget'),
-                                        SizedBox(
-                                          height: 10.0,
-                                        ),
-                                        Text('${value.round()} €'),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 15.0, vertical: 10.0),
-                                child: Center(
-                                  child: ToggleButtons(
-                                    borderRadius: BorderRadius.circular(10.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  ToggleButtons(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    fillColor: Colors.blue,
+                                    selectedColor: Colors.white,
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text('One way'),
+                                        padding: const EdgeInsets.all(15.0),
+                                        child: Text('One way',
+                                            style: _isSelected[
+                                                    FlightType.oneWay.index]
+                                                ? Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1!
+                                                    .copyWith(
+                                                        color: Colors.white)
+                                                : Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text('Round trip'),
+                                        padding: const EdgeInsets.all(15.0),
+                                        child: Text('Round trip',
+                                            style: _isSelected[
+                                                    FlightType.roundTrip.index]
+                                                ? Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1!
+                                                    .copyWith(
+                                                        color: Colors.white)
+                                                : Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1),
                                       ),
                                     ],
-                                    isSelected: isSelected,
+                                    isSelected: _isSelected,
                                     onPressed: (int index) {
                                       setState(() {
                                         for (int buttonIndex = 0;
-                                            buttonIndex < isSelected.length;
+                                            buttonIndex < _isSelected.length;
                                             buttonIndex++) {
                                           if (buttonIndex == index) {
-                                            isSelected[buttonIndex] = true;
+                                            _isSelected[buttonIndex] = true;
                                           } else {
-                                            isSelected[buttonIndex] = false;
+                                            _isSelected[buttonIndex] = false;
                                           }
                                         }
-                                        oneWay = isSelected.first;
+                                        _oneWay = _isSelected[
+                                            FlightType.oneWay.index];
                                       });
                                     },
                                   ),
-                                ),
+                                ],
                               ),
+                            ],
+                          ),
+                          SleekCircularSlider(
+                            appearance: CircularSliderAppearance(
+                              size: 180.0,
+                              customColors: CustomSliderColors(
+                                dotColor: Colors.blue,
+                                progressBarColor: Colors.blue,
+                                trackColor: Colors.grey,
+                              ),
+                              customWidths: CustomSliderWidths(
+                                  progressBarWidth: 4.0, handlerSize: 5.0),
                             ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: Container(
-                                child: Button(
-                                  text: 'Clear',
-                                  backgroundColor: Colors.amber,
-                                  textColor: Colors.black,
-                                  onPressed: () {
-                                    context
-                                        .read<DepartureAirport>()
-                                        .clearAirport();
-                                    context
-                                        .read<ArrivalAirport>()
-                                        .clearAirport();
-                                    context.read<DateRange>().clearDateRange();
-                                  },
+                            min: 1,
+                            max: 500,
+                            initialValue: _currentBudgetSliderValue,
+                            onChange: (double value) {
+                              _currentBudgetSliderValue = value;
+                            },
+                            innerWidget: (double value) {
+                              _currentBudgetSliderValue = value;
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Budget',
+                                    style:
+                                        Theme.of(context).textTheme.headline3,
+                                  ),
+                                  SizedBox(
+                                    height: 7.0,
+                                  ),
+                                  Text(
+                                    '${_currentBudgetSliderValue.round()} €',
+                                    style:
+                                        Theme.of(context).textTheme.headline1,
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  child: Button(
+                                    text: 'Reset',
+                                    backgroundColor: Colors.amber,
+                                    textColor: Colors.black,
+                                    onPressed: () {
+                                      resetDepartureAirportField();
+                                      resetArrivalAirportField();
+                                      resetDateRangeField();
+                                      resetFlightTypeToggleButton();
+                                      resetBudgetSlider();
+                                    },
+                                  ),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 20.0, vertical: 15.0),
                                 ),
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 20.0, vertical: 15.0),
                               ),
-                            ),
-                            Expanded(
-                              flex: 5,
-                              child: Container(
-                                child: Button(
-                                  text: 'Search',
-                                  backgroundColor: Colors.greenAccent,
-                                  textColor: Colors.black,
-                                  onPressed: () {
-                                    var departureAirport = context
-                                        .read<DepartureAirport>()
-                                        .airport;
-                                    var arrivalAirport =
-                                        context.read<ArrivalAirport>().airport;
-                                    var dateRange =
-                                        context.read<DateRange>().dateRange;
-                                    if (departureAirport == null ||
-                                        arrivalAirport == null ||
-                                        dateRange == null) {
-                                      Get.snackbar('Error',
-                                          'Departure airport, arrival airport and data range must be set',
-                                          backgroundColor: Colors.red,
-                                          colorText: Colors.white,
-                                          snackPosition: SnackPosition.BOTTOM,
-                                          snackStyle: SnackStyle.FLOATING,
-                                          isDismissible: true,
-                                          animationDuration:
-                                              Duration(milliseconds: 700));
-                                    }
-                                  },
+                              Expanded(
+                                flex: 3,
+                                child: Container(
+                                  child: Button(
+                                    text: 'Search',
+                                    backgroundColor: Colors.greenAccent,
+                                    textColor: Colors.black,
+                                    onPressed: () {
+                                      var departureAirport = context
+                                          .read<DepartureAirport>()
+                                          .airport;
+                                      var arrivalAirport = context
+                                          .read<ArrivalAirport>()
+                                          .airport;
+                                      var dateRange =
+                                          context.read<DateRange>().dateRange;
+                                      if (departureAirport == null ||
+                                          arrivalAirport == null ||
+                                          dateRange == null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Departure airport, arrival airport and data range must be set',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1!
+                                                  .copyWith(
+                                                      color: Colors.white),
+                                            ),
+                                            duration: Duration(seconds: 2),
+                                            backgroundColor: Colors.red,
+                                            padding: EdgeInsets.all(20.0),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 20.0, vertical: 15.0),
                                 ),
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 20.0, vertical: 15.0),
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -277,7 +334,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
             child = Container(
               color: Colors.white,
               child: Center(
-                child: SpinKitFadingCircle(
+                child: SpinKitRing(
                   color: Colors.blue,
                   size: 50.0,
                 ),

@@ -14,13 +14,13 @@ import 'package:travel_finder/constants.dart';
 import 'package:travel_finder/models/available_destinations.dart';
 
 class AirportSelectionPage extends StatefulWidget {
-  final bool _arrivalAirport;
+  final bool _isArrivalAirport;
   final List<Airport> _airports;
   final Map<String, String> _alpha2CodesByCountries = {};
 
   AirportSelectionPage({required airports, required isArrivalAirport})
       : _airports = airports,
-        _arrivalAirport = isArrivalAirport {
+        _isArrivalAirport = isArrivalAirport {
     groupCountriesWithAlpha2Codes();
   }
 
@@ -37,7 +37,7 @@ class AirportSelectionPage extends StatefulWidget {
 }
 
 class _AirportSelectionPageState extends State<AirportSelectionPage> {
-  TextEditingController _editingController = TextEditingController();
+  final TextEditingController _editingController = TextEditingController();
   List<Airport> _airports = [];
 
   String getAlpha2CodeFromCountryName(String countryName) {
@@ -100,8 +100,6 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
         child: Column(
           children: [
             AppBar(
-              title: Text('Choose airport'),
-              centerTitle: true,
               backgroundColor: Colors.blue,
             ),
             Padding(
@@ -112,14 +110,17 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
                 },
                 controller: _editingController,
                 decoration: InputDecoration(
-                    labelText: 'Search',
                     hintText: 'Search',
+                    hintStyle: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        ?.copyWith(color: Colors.grey),
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
             ),
-            widget._arrivalAirport
+            widget._isArrivalAirport
                 ? Container(
                     child: ListTile(
                       contentPadding: EdgeInsets.symmetric(
@@ -130,8 +131,7 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
                       ),
                       title: Text(
                         'Anywhere',
-                        style: TextStyle(
-                            fontSize: 20.0, fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.headline3,
                       ),
                       onTap: () {
                         context.read<ArrivalAirport>().setAirport(Airport(
@@ -168,8 +168,7 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
                         title: Text(
                           country,
                           textAlign: TextAlign.start,
-                          style: TextStyle(
-                              fontSize: 20.0, fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.headline3,
                         ),
                       ),
                       margin:
@@ -177,15 +176,17 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
                     ),
                     itemBuilder: (context, airport) {
                       return Card(
-                        elevation: 4.0,
+                        elevation: 3.0,
                         child: ListTile(
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 20.0, vertical: 10.0),
-                          title: Text(airport['name']),
+                          title: Text(
+                            airport['name'],
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
                           trailing: Text(airport['iataCode']),
                           onTap: () async {
-                            Navigator.pop(context);
-                            if (widget._arrivalAirport) {
+                            if (widget._isArrivalAirport) {
                               context
                                   .read<ArrivalAirport>()
                                   .setAirport(airport);
@@ -193,6 +194,7 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
                               var currentAirport =
                                   context.read<DepartureAirport>().airport;
                               if (currentAirport != airport) {
+                                context.read<ArrivalAirport>().resetAirport();
                                 context
                                     .read<DepartureAirport>()
                                     .setAirport(airport);
@@ -205,6 +207,7 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
                                 EasyLoading.dismiss();
                               }
                             }
+                            Navigator.pop(context);
                           },
                         ),
                       );

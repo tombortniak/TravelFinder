@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:travel_finder/constants.dart';
 
 class DateRange with ChangeNotifier {
   DateTimeRange? _dateRange;
@@ -12,7 +13,7 @@ class DateRange with ChangeNotifier {
     notifyListeners();
   }
 
-  void clearDateRange() {
+  void resetDateRange() {
     _dateRange = null;
     notifyListeners();
   }
@@ -28,13 +29,11 @@ class DateRangeText extends StatelessWidget {
           ? 'Data range'
           : (context.watch<DateRange>().dateRange!.start ==
                   context.watch<DateRange>().dateRange!.end
-              ? '${DateFormat('EEE, MMMM d').format(context.watch<DateRange>().dateRange!.start)}'
-              : '${DateFormat('EEE, MMMM d').format(context.watch<DateRange>().dateRange!.start)} - ${DateFormat('EEE, MMMM d').format(context.watch<DateRange>().dateRange!.end)}'),
-      style: TextStyle(
-        color: context.watch<DateRange>().dateRange == null
-            ? Colors.grey
-            : Colors.black,
-      ),
+              ? '${DateFormat('EEE, MMM d').format(context.watch<DateRange>().dateRange!.start)}'
+              : '${DateFormat('EEE, MMM d').format(context.watch<DateRange>().dateRange!.start)} - ${DateFormat('EEE, MMM d').format(context.watch<DateRange>().dateRange!.end)}'),
+      style: context.watch<DateRange>().dateRange != null
+          ? Theme.of(context).textTheme.bodyText1
+          : Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.grey),
     );
   }
 }

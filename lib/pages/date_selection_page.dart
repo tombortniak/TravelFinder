@@ -3,8 +3,6 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:travel_finder/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_finder/components/button.dart';
-import 'package:travel_finder/components/month_card.dart';
-import 'package:travel_finder/components/period_cart.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_finder/models/date_range.dart';
 
@@ -22,31 +20,6 @@ class _DateSelectionPageState extends State<DateSelectionPage> {
   DateTime? _rangeEnd;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.enforced;
   CalendarFormat _calendarFormat = CalendarFormat.month;
-
-  List<Widget> generateMonthContainers() {
-    DateTime currentDate = DateTime.now();
-
-    int monthCounter = 0;
-
-    List<Widget> columnChildren = [];
-    while (monthCounter < 12) {
-      List<Widget> rowChildren = [];
-      for (int i = 0; i < 3; ++i) {
-        var container = Expanded(
-          child: MonthCard(
-              monthRange: DateTimeRange(
-                  start: DateTime(currentDate.year, currentDate.month, 1),
-                  end: DateTime(currentDate.year, currentDate.month + 1, 0))),
-        );
-        rowChildren.add(container);
-        currentDate = DateTime(currentDate.year, currentDate.month + 1);
-      }
-      columnChildren.add(Row(children: rowChildren));
-      monthCounter += 3;
-    }
-
-    return columnChildren;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +40,7 @@ class _DateSelectionPageState extends State<DateSelectionPage> {
                         color: Colors.white),
                     labelColor: Colors.black,
                     unselectedLabelColor: Colors.white,
+                    labelStyle: Theme.of(context).textTheme.bodyText1,
                     tabs: [
                       Tab(
                         text: 'Dates',
@@ -99,6 +73,9 @@ class _DateSelectionPageState extends State<DateSelectionPage> {
                             rangeEndDay: _rangeEnd,
                             rangeSelectionMode: _rangeSelectionMode,
                             calendarFormat: _calendarFormat,
+                            headerStyle: HeaderStyle(
+                                titleTextStyle:
+                                    Theme.of(context).textTheme.headline3!),
                             onDaySelected: (selectedDay, focusedDay) {
                               setState(() {
                                 _selectedDay = selectedDay;
@@ -127,25 +104,28 @@ class _DateSelectionPageState extends State<DateSelectionPage> {
                                 _calendarFormat = format;
                               });
                             },
-                            calendarBuilders: CalendarBuilders(todayBuilder:
-                                (context, selectedDay, focusedDay) {
-                              final text = DateFormat.d().format(selectedDay);
-                              return Center(
-                                child: Container(
-                                  child: Text(
-                                    text,
-                                    style: TextStyle(color: Colors.amber),
+                            calendarBuilders: CalendarBuilders(
+                              todayBuilder: (context, selectedDay, focusedDay) {
+                                final text = DateFormat.d().format(selectedDay);
+                                return Center(
+                                  child: Container(
+                                    child: Text(
+                                      text,
+                                      style: TextStyle(
+                                          color: Colors.deepOrangeAccent),
+                                    ),
+                                    padding: EdgeInsets.all(10.0),
                                   ),
-                                  padding: EdgeInsets.all(10.0),
-                                ),
-                              );
-                            }, headerTitleBuilder: (context, day) {
-                              final month = DateFormat.MMMM().format(day);
-                              final year = DateFormat.y().format(day);
-                              return Center(
-                                child: Text('$month $year'),
-                              );
-                            }),
+                                );
+                              },
+                              headerTitleBuilder: (context, day) {
+                                final month = DateFormat.MMMM().format(day);
+                                final year = DateFormat.y().format(day);
+                                return Center(
+                                  child: Text('$month $year'),
+                                );
+                              },
+                            ),
                             availableCalendarFormats: {
                               _calendarFormat: 'month'
                             },
@@ -159,103 +139,23 @@ class _DateSelectionPageState extends State<DateSelectionPage> {
                                 if (_rangeStart != null) {
                                   _rangeEnd ??= _rangeStart;
                                   context.read<DateRange>().setDateTimeRange(
-                                      DateTimeRange(
-                                          start: _rangeStart!,
-                                          end: _rangeEnd!));
+                                        DateTimeRange(
+                                            start: _rangeStart!,
+                                            end: _rangeEnd!),
+                                      );
                                   Navigator.pop(context);
                                 }
                               },
                             ),
                             margin: EdgeInsets.symmetric(
-                                vertical: 20.0, horizontal: 30.0),
+                              vertical: 20.0,
+                              horizontal: 30.0,
+                            ),
                           )
                         ],
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 10.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Container(
-                            child: Text(
-                              'Month',
-                              textAlign: TextAlign.center,
-                            ),
-                            margin: EdgeInsets.symmetric(vertical: 10.0),
-                          ),
-                          Column(
-                            children: generateMonthContainers(),
-                          ),
-                          Divider(
-                            color: Colors.black,
-                          ),
-                          Container(
-                            child: Text(
-                              'Period',
-                              textAlign: TextAlign.center,
-                            ),
-                            margin: EdgeInsets.symmetric(vertical: 10.0),
-                          ),
-                          Wrap(
-                            spacing: 20.0,
-                            runSpacing: 10.0,
-                            alignment: WrapAlignment.center,
-                            children: [
-                              PeriodCard(
-                                text: 'Next 3 months',
-                                dateTimeRange: DateTimeRange(
-                                    start: DateTime(
-                                        DateTime.now().year,
-                                        DateTime.now().month,
-                                        DateTime.now().day),
-                                    end: DateTime(
-                                        DateTime.now().year,
-                                        DateTime.now().month + 3,
-                                        DateTime.now().day)),
-                              ),
-                              PeriodCard(
-                                text: 'Next 6 months',
-                                dateTimeRange: DateTimeRange(
-                                    start: DateTime(
-                                        DateTime.now().year,
-                                        DateTime.now().month,
-                                        DateTime.now().day),
-                                    end: DateTime(
-                                        DateTime.now().year,
-                                        DateTime.now().month + 6,
-                                        DateTime.now().day)),
-                              ),
-                              PeriodCard(
-                                text: 'Next year',
-                                dateTimeRange: DateTimeRange(
-                                    start: DateTime(
-                                        DateTime.now().year,
-                                        DateTime.now().month,
-                                        DateTime.now().day),
-                                    end: DateTime(
-                                        DateTime.now().year + 1,
-                                        DateTime.now().month,
-                                        DateTime.now().day)),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            child: Button(
-                              text: 'Back',
-                              textColor: Colors.white,
-                              backgroundColor: Colors.blue,
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                            margin: EdgeInsets.symmetric(
-                                vertical: 20.0, horizontal: 30.0),
-                          )
-                        ],
-                      ),
-                    )
+                    Container()
                   ],
                 ),
               ),

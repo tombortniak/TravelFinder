@@ -51,9 +51,7 @@ class _HomePageState extends State<HomePage> {
           onTap: _onItemTapped,
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.explore),
-              label: 'Explore',
-            ),
+                icon: Icon(Icons.explore), label: 'Explore'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.settings), label: 'Settings'),
             BottomNavigationBarItem(
