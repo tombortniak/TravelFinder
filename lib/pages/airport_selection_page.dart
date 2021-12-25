@@ -8,24 +8,22 @@ import 'package:travel_finder/models/arrival_airport.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_finder/models/departure_airport.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:travel_finder/services/json_converter.dart';
-import 'package:travel_finder/services/http_manager.dart';
-import 'package:travel_finder/constants.dart';
 import 'package:travel_finder/models/available_destinations.dart';
+import 'package:travel_finder/services/ryanair_data_fetcher.dart';
 
 class AirportSelectionPage extends StatefulWidget {
   final bool _isArrivalAirport;
-  final List<Airport> _airports;
+  final List<Airport> _availableAirports;
   final Map<String, String> _alpha2CodesByCountries = {};
 
-  AirportSelectionPage({required airports, required isArrivalAirport})
-      : _airports = airports,
+  AirportSelectionPage({required availableAirports, required isArrivalAirport})
+      : _availableAirports = availableAirports,
         _isArrivalAirport = isArrivalAirport {
     groupCountriesWithAlpha2Codes();
   }
 
   void groupCountriesWithAlpha2Codes() {
-    for (var airport in _airports) {
+    for (var airport in _availableAirports) {
       if (!_alpha2CodesByCountries.containsKey(airport.country)) {
         _alpha2CodesByCountries[airport.country] = airport.countryAlpha2Code;
       }
@@ -38,58 +36,77 @@ class AirportSelectionPage extends StatefulWidget {
 
 class _AirportSelectionPageState extends State<AirportSelectionPage> {
   final TextEditingController _editingController = TextEditingController();
-  List<Airport> _airports = [];
+  List<Airport> _availableAirports = [];
 
   String getAlpha2CodeFromCountryName(String countryName) {
     return widget._alpha2CodesByCountries[countryName] ?? '';
   }
 
-  void filterSearchResults(String query) {
-    List<Airport> searchList = [];
-    searchList.addAll(widget._airports);
-
+  void filterAirportSearchResults(String query) {
     if (query.isNotEmpty) {
-      List<Airport> listData = [];
+      List<Airport> airportSearchResults = [];
 
-      searchList.forEach((airport) {
+      for (var airport in widget._availableAirports) {
         if (airport.name.toLowerCase().contains(query)) {
-          listData.add(airport);
+          airportSearchResults.add(airport);
         }
-      });
+      }
       setState(() {
-        _airports.clear();
-        _airports.addAll(listData);
+        _availableAirports.clear();
+        _availableAirports.addAll(airportSearchResults);
       });
     } else {
       setState(() {
-        _airports.clear();
-        _airports.addAll(widget._airports);
+        _availableAirports.clear();
+        _availableAirports.addAll(widget._availableAirports);
       });
     }
   }
 
-  Future<List<Airport>> getAvailableDestinations() async {
+  Future<List<Airport>> getAvailableDestinationsForDepartureAirport() async {
     List<Airport> airports = [];
-    if (context.read<DepartureAirport>().airport != null) {
-      var departureAirportIataCode =
-          context.read<DepartureAirport>().airport?.iataCode;
-
-      HttpManager http = HttpManager(
-          url:
-              '$kBaseRyanairUrl$kOneWayUrl&departureAirportIataCode=$departureAirportIataCode&inboundDepartureDateFrom=2021-12-20&inboundDepartureDateTo=2022-12-20&market=en-gb&outboundDepartureDateFrom=2021-12-20&outboundDepartureDateTo=2022-12-20&priceValueTo=1000');
-
-      var data = await http.getData();
-      JsonConverter converter = JsonConverter();
-      airports = converter.convertToAirports(data);
-    }
-
+    RyanairDataFetcher ryanairDataFetcher = RyanairDataFetcher();
+    airports = await ryanairDataFetcher.getAvailableDestinationsForAirport(
+        context.read<DepartureAirport>().airport!);
     return airports;
+  }
+
+  Future<void> setAvailableDestinationsForDepartureAirport() async {
+    var airports = await getAvailableDestinationsForDepartureAirport();
+    context.read<AvailableDestinations>().setAvailableDestinations(airports);
+  }
+
+  void setDepartureAirport(Airport airport) {
+    context.read<DepartureAirport>().setAirport(airport);
+  }
+
+  void setArrivalAirport(Airport airport) {
+    context.read<ArrivalAirport>().setAirport(airport);
+  }
+
+  void resetArrivalAirport() {
+    context.read<ArrivalAirport>().resetAirport();
+  }
+
+  void setAnywhereDestination() {
+    context.read<ArrivalAirport>().setAirport(
+          Airport(
+              name: 'Anywhere',
+              country: '',
+              countryAlpha2Code: '',
+              iataCode: ''),
+        );
+  }
+
+  bool currentDepartureAirportEquals(Airport airport) {
+    var currentAirport = context.read<DepartureAirport>().airport;
+    return currentAirport == airport;
   }
 
   @override
   void initState() {
     super.initState();
-    _airports.addAll(widget._airports);
+    _availableAirports.addAll(widget._availableAirports);
   }
 
   @override
@@ -106,113 +123,99 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 onChanged: (value) {
-                  filterSearchResults(value);
+                  filterAirportSearchResults(value);
                 },
                 controller: _editingController,
                 decoration: InputDecoration(
-                    hintText: 'Search',
-                    hintStyle: Theme.of(context)
-                        .textTheme
-                        .bodyText1
-                        ?.copyWith(color: Colors.grey),
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                  hintText: 'Search',
+                  hintStyle: Theme.of(context)
+                      .textTheme
+                      .bodyText1
+                      ?.copyWith(color: Colors.grey),
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(25.0),
+                    ),
+                  ),
+                ),
               ),
             ),
             widget._isArrivalAirport
-                ? Container(
-                    child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 10.0),
-                      leading: Text(
-                        '🌍',
-                        style: TextStyle(fontSize: 30.0),
-                      ),
-                      title: Text(
-                        'Anywhere',
-                        style: Theme.of(context).textTheme.headline3,
-                      ),
-                      onTap: () {
-                        context.read<ArrivalAirport>().setAirport(Airport(
-                            name: 'Anywhere',
-                            country: '',
-                            countryAlpha2Code: '',
-                            iataCode: ''));
-                        Navigator.pop(context);
-                      },
+                ? ListTile(
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                    leading: Text(
+                      '🌍',
+                      style: Theme.of(context).textTheme.headline1,
                     ),
+                    title: Text(
+                      'Anywhere',
+                      style: Theme.of(context).textTheme.headline3,
+                    ),
+                    onTap: () {
+                      setAnywhereDestination();
+                      Navigator.pop(context);
+                    },
                   )
                 : SizedBox.shrink(),
             Expanded(
-              child: Container(
-                child: SingleChildScrollView(
-                  child: GroupedListView<dynamic, String>(
-                    controller: ModalScrollController.of(context),
-                    shrinkWrap: true,
-                    elements: _airports,
-                    groupBy: (airport) => airport['country'],
-                    groupComparator: (value1, value2) =>
-                        value2.compareTo(value1),
-                    itemComparator: (item1, item2) => item2['name'].compareTo(
-                      item1['name'],
-                    ),
-                    order: GroupedListOrder.DESC,
-                    groupSeparatorBuilder: (String country) => Container(
-                      child: ListTile(
-                        leading: Text(
-                          EmojiConverter.fromAlpha2CountryCode(
-                              getAlpha2CodeFromCountryName(country)),
-                          style: TextStyle(fontSize: 30.0),
-                        ),
-                        title: Text(
-                          country,
-                          textAlign: TextAlign.start,
-                          style: Theme.of(context).textTheme.headline3,
-                        ),
-                      ),
-                      margin:
-                          EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),
-                    ),
-                    itemBuilder: (context, airport) {
-                      return Card(
-                        elevation: 3.0,
-                        child: ListTile(
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 20.0, vertical: 10.0),
-                          title: Text(
-                            airport['name'],
-                            style: Theme.of(context).textTheme.bodyText1,
-                          ),
-                          trailing: Text(airport['iataCode']),
-                          onTap: () async {
-                            if (widget._isArrivalAirport) {
-                              context
-                                  .read<ArrivalAirport>()
-                                  .setAirport(airport);
-                            } else {
-                              var currentAirport =
-                                  context.read<DepartureAirport>().airport;
-                              if (currentAirport != airport) {
-                                context.read<ArrivalAirport>().resetAirport();
-                                context
-                                    .read<DepartureAirport>()
-                                    .setAirport(airport);
-
-                                EasyLoading.show(status: 'Loading');
-                                var airports = await getAvailableDestinations();
-                                context
-                                    .read<AvailableDestinations>()
-                                    .setAvailableDestinations(airports);
-                                EasyLoading.dismiss();
-                              }
-                            }
-                            Navigator.pop(context);
-                          },
-                        ),
-                      );
-                    },
+              child: SingleChildScrollView(
+                child: GroupedListView<dynamic, String>(
+                  controller: ModalScrollController.of(context),
+                  shrinkWrap: true,
+                  elements: _availableAirports,
+                  groupBy: (airport) => airport.country,
+                  groupComparator: (firstCountry, secondCountry) =>
+                      secondCountry.compareTo(firstCountry),
+                  itemComparator: (firstAirport, secondAirport) =>
+                      secondAirport.name.compareTo(
+                    firstAirport.name,
                   ),
+                  order: GroupedListOrder.DESC,
+                  groupSeparatorBuilder: (String country) => Container(
+                    child: ListTile(
+                      leading: Text(
+                        EmojiConverter.fromAlpha2CountryCode(
+                            getAlpha2CodeFromCountryName(country)),
+                        style: Theme.of(context).textTheme.headline1,
+                      ),
+                      title: Text(
+                        country,
+                        textAlign: TextAlign.start,
+                        style: Theme.of(context).textTheme.headline3,
+                      ),
+                    ),
+                    margin: EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),
+                  ),
+                  itemBuilder: (context, airport) {
+                    return Card(
+                      elevation: 3.0,
+                      child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 10.0),
+                        title: Text(
+                          airport.name,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        trailing: Text(airport.iataCode),
+                        onTap: () async {
+                          if (widget._isArrivalAirport) {
+                            setArrivalAirport(airport);
+                          } else {
+                            if (!currentDepartureAirportEquals(airport)) {
+                              resetArrivalAirport();
+                              setDepartureAirport(airport);
+                              EasyLoading.show(status: 'Loading');
+                              await setAvailableDestinationsForDepartureAirport();
+                              EasyLoading.dismiss();
+                            }
+                          }
+                          Navigator.pop(context);
+                        },
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

@@ -7,7 +7,7 @@ import 'package:travel_finder/models/departure_airport.dart';
 import 'package:travel_finder/pages/home_page.dart';
 import 'package:provider/provider.dart';
 import 'models/date_range.dart';
-import 'package:get/get.dart';
+import 'theme.dart';
 import 'constants.dart';
 
 void main() async {
@@ -44,9 +44,10 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = TravelFinderTheme.light();
     return MaterialApp(
       home: HomePage(),
-      theme: appThemeData,
+      theme: theme,
       builder: EasyLoading.init(),
     );
   }

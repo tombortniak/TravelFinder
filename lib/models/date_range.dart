@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:travel_finder/constants.dart';
 
 class DateRange with ChangeNotifier {
   DateTimeRange? _dateRange;

@@ -8,7 +8,7 @@ import 'package:travel_finder/models/departure_airport.dart';
 import 'package:travel_finder/pages/airport_selection_page.dart';
 import 'package:travel_finder/pages/date_selection_page.dart';
 import 'package:travel_finder/components/flight_search_field.dart';
-import 'package:travel_finder/services/database.dart';
+import 'package:travel_finder/services/airport_database.dart';
 import 'package:travel_finder/models/airport.dart';
 import 'package:travel_finder/models/arrival_airport.dart';
 import 'package:provider/provider.dart';
@@ -17,8 +17,6 @@ import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:travel_finder/components/button.dart';
 
 class FlightSearchPage extends StatefulWidget {
-  final AirportFinder _airportFinder = AirportFinder();
-
   FlightSearchPage({Key? key}) : super(key: key);
 
   @override
@@ -28,12 +26,7 @@ class FlightSearchPage extends StatefulWidget {
 class _FlightSearchPageState extends State<FlightSearchPage> {
   List<Airport>? _availableAirports;
   List<bool> _isSelected = [true, false];
-  double _currentBudgetSliderValue = 100.0;
-  bool _oneWay = true;
-
-  Future<List<Airport>> getAvailableAirports() async {
-    return widget._airportFinder.getAvailableAirports();
-  }
+  double _currentBudgetSliderValue = 150.0;
 
   void resetDepartureAirportField() {
     context.read<DepartureAirport>().resetAirport();
@@ -63,10 +56,30 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Airport>>(
-        future: getAvailableAirports(),
+        future: AirportDatabase.getAvailableAirports(),
         builder: (BuildContext context, AsyncSnapshot<List<Airport>> snapshot) {
           Widget child;
-          if (snapshot.hasData) {
+          if (snapshot.hasError) {
+            child = Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Something went wrong',
+                  style: Theme.of(context).textTheme.headline2,
+                ),
+                Text(
+                  'Error while downloading data from database',
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Back'),
+                )
+              ],
+            );
+          } else if (snapshot.hasData) {
             _availableAirports = snapshot.data;
             child = Container(
               color: Colors.white,
@@ -102,7 +115,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                     backgroundColor: Colors.transparent,
                                     context: context,
                                     builder: (context) => AirportSelectionPage(
-                                      airports: _availableAirports,
+                                      availableAirports: _availableAirports,
                                       isArrivalAirport: false,
                                     ),
                                   );
@@ -139,7 +152,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                       context: context,
                                       builder: (context) =>
                                           AirportSelectionPage(
-                                              airports: context
+                                              availableAirports: context
                                                   .read<AvailableDestinations>()
                                                   .availableDestinations,
                                               isArrivalAirport: true),
@@ -170,49 +183,33 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                     selectedColor: Colors.white,
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.all(15.0),
-                                        child: Text('One way',
-                                            style: _isSelected[
-                                                    FlightType.oneWay.index]
-                                                ? Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText1!
-                                                    .copyWith(
-                                                        color: Colors.white)
-                                                : Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText1),
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(
+                                          'One way',
+                                        ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.all(15.0),
-                                        child: Text('Round trip',
-                                            style: _isSelected[
-                                                    FlightType.roundTrip.index]
-                                                ? Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText1!
-                                                    .copyWith(
-                                                        color: Colors.white)
-                                                : Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText1),
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(
+                                          'Round trip',
+                                        ),
                                       ),
                                     ],
                                     isSelected: _isSelected,
                                     onPressed: (int index) {
-                                      setState(() {
-                                        for (int buttonIndex = 0;
-                                            buttonIndex < _isSelected.length;
-                                            buttonIndex++) {
-                                          if (buttonIndex == index) {
-                                            _isSelected[buttonIndex] = true;
-                                          } else {
-                                            _isSelected[buttonIndex] = false;
+                                      setState(
+                                        () {
+                                          for (int buttonIndex = 0;
+                                              buttonIndex < _isSelected.length;
+                                              buttonIndex++) {
+                                            if (buttonIndex == index) {
+                                              _isSelected[buttonIndex] = true;
+                                            } else {
+                                              _isSelected[buttonIndex] = false;
+                                            }
                                           }
-                                        }
-                                        _oneWay = _isSelected[
-                                            FlightType.oneWay.index];
-                                      });
+                                        },
+                                      );
                                     },
                                   ),
                                 ],
@@ -252,7 +249,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                   Text(
                                     '${_currentBudgetSliderValue.round()} €',
                                     style:
-                                        Theme.of(context).textTheme.headline1,
+                                        Theme.of(context).textTheme.headline4,
                                   ),
                                 ],
                               );
