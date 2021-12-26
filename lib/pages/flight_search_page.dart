@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:travel_finder/constants.dart';
-import 'package:travel_finder/models/date_range.dart';
-import 'package:travel_finder/models/departure_airport.dart';
 import 'package:travel_finder/pages/airport_selection_page.dart';
-import 'package:travel_finder/pages/date_selection_page.dart';
-import 'package:travel_finder/components/flight_search_field.dart';
+import 'package:travel_finder/components/flight_details_field.dart';
 import 'package:travel_finder/services/airport_database.dart';
 import 'package:travel_finder/models/airport.dart';
-import 'package:travel_finder/models/arrival_airport.dart';
 import 'package:provider/provider.dart';
-import 'package:travel_finder/models/available_destinations.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:travel_finder/components/button.dart';
+import 'package:travel_finder/models/flight_details.dart';
+import 'package:intl/intl.dart';
 
 class FlightSearchPage extends StatefulWidget {
   FlightSearchPage({Key? key}) : super(key: key);
@@ -25,32 +21,13 @@ class FlightSearchPage extends StatefulWidget {
 
 class _FlightSearchPageState extends State<FlightSearchPage> {
   List<Airport>? _availableAirports;
-  List<bool> _isSelected = [true, false];
-  double _currentBudgetSliderValue = 150.0;
 
-  void resetDepartureAirportField() {
-    context.read<DepartureAirport>().resetAirport();
+  FlightType getCurrentFlightType() {
+    return context.read<FlightDetails>().flightType;
   }
 
-  void resetArrivalAirportField() {
-    context.read<ArrivalAirport>().resetAirport();
-  }
-
-  void resetDateRangeField() {
-    context.read<DateRange>().resetDateRange();
-  }
-
-  void resetFlightTypeToggleButton() {
-    setState(() {
-      _isSelected[FlightType.oneWay.index] = true;
-      _isSelected[FlightType.roundTrip.index] = false;
-    });
-  }
-
-  void resetBudgetSlider() {
-    setState(() {
-      _currentBudgetSliderValue = 150.0;
-    });
+  void resetFlightDetails() {
+    context.read<FlightDetails>().resetAll();
   }
 
   @override
@@ -104,33 +81,74 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                           ),
                           Column(
                             children: [
-                              FlightSearchField(
-                                text: DepartureAirportText(),
+                              FlightDetailsField(
+                                text: Text(
+                                  context
+                                              .watch<FlightDetails>()
+                                              .departureAirport ==
+                                          null
+                                      ? 'Departure airport'
+                                      : context
+                                          .watch<FlightDetails>()
+                                          .departureAirport!
+                                          .name,
+                                  style: context
+                                              .watch<FlightDetails>()
+                                              .departureAirport !=
+                                          null
+                                      ? Theme.of(context).textTheme.bodyText1
+                                      : Theme.of(context)
+                                          .textTheme
+                                          .bodyText1
+                                          ?.copyWith(color: Colors.grey),
+                                ),
                                 icon: FaIcon(
                                   FontAwesomeIcons.planeDeparture,
                                   color: Colors.grey,
                                 ),
                                 onTap: () {
-                                  showMaterialModalBottomSheet(
-                                    backgroundColor: Colors.transparent,
+                                  showGeneralDialog(
                                     context: context,
-                                    builder: (context) => AirportSelectionPage(
-                                      availableAirports: _availableAirports,
-                                      isArrivalAirport: false,
-                                    ),
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        AirportSelectionPage(
+                                            availableAirports:
+                                                _availableAirports,
+                                            isArrivalAirport: false),
+                                    transitionDuration:
+                                        Duration(milliseconds: 100),
                                   );
                                 },
                               ),
-                              FlightSearchField(
-                                text: ArrivalAirportText(),
+                              FlightDetailsField(
+                                text: Text(
+                                  context
+                                              .watch<FlightDetails>()
+                                              .arrivalAirport ==
+                                          null
+                                      ? 'Arrival airport'
+                                      : context
+                                          .watch<FlightDetails>()
+                                          .arrivalAirport!
+                                          .name,
+                                  style: context
+                                              .watch<FlightDetails>()
+                                              .arrivalAirport !=
+                                          null
+                                      ? Theme.of(context).textTheme.bodyText1
+                                      : Theme.of(context)
+                                          .textTheme
+                                          .bodyText1
+                                          ?.copyWith(color: Colors.grey),
+                                ),
                                 icon: FaIcon(
                                   FontAwesomeIcons.planeArrival,
                                   color: Colors.grey,
                                 ),
                                 onTap: () {
                                   if (context
-                                          .read<DepartureAirport>()
-                                          .airport ==
+                                          .read<FlightDetails>()
+                                          .departureAirport ==
                                       null) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
@@ -147,31 +165,64 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                       ),
                                     );
                                   } else {
-                                    showMaterialModalBottomSheet(
-                                      backgroundColor: Colors.transparent,
+                                    showGeneralDialog(
                                       context: context,
-                                      builder: (context) =>
+                                      pageBuilder: (context, animation,
+                                              secondaryAnimation) =>
                                           AirportSelectionPage(
-                                              availableAirports: context
-                                                  .read<AvailableDestinations>()
-                                                  .availableDestinations,
+                                              availableAirports:
+                                                  _availableAirports,
                                               isArrivalAirport: true),
+                                      transitionDuration:
+                                          Duration(milliseconds: 100),
                                     );
                                   }
                                 },
                               ),
-                              FlightSearchField(
-                                text: DateRangeText(),
+                              FlightDetailsField(
+                                text: Text(
+                                  context
+                                              .watch<FlightDetails>()
+                                              .travelDateRange ==
+                                          null
+                                      ? 'Data range'
+                                      : (context
+                                                  .watch<FlightDetails>()
+                                                  .travelDateRange!
+                                                  .start ==
+                                              context
+                                                  .watch<FlightDetails>()
+                                                  .travelDateRange!
+                                                  .end
+                                          ? '${DateFormat('EEE, MMM d').format(context.watch<FlightDetails>().travelDateRange!.start)}'
+                                          : '${DateFormat('EEE, MMM d').format(context.watch<FlightDetails>().travelDateRange!.start)} - ${DateFormat('EEE, MMM d').format(context.watch<FlightDetails>().travelDateRange!.end)}'),
+                                  style: context
+                                              .watch<FlightDetails>()
+                                              .travelDateRange !=
+                                          null
+                                      ? Theme.of(context).textTheme.bodyText1
+                                      : Theme.of(context)
+                                          .textTheme
+                                          .bodyText1
+                                          ?.copyWith(color: Colors.grey),
+                                ),
                                 icon: FaIcon(
                                   FontAwesomeIcons.calendar,
                                   color: Colors.grey,
                                 ),
-                                onTap: () {
-                                  showMaterialModalBottomSheet(
+                                onTap: () async {
+                                  final selectedDateRange =
+                                      await showDateRangePicker(
                                     context: context,
-                                    builder: (context) => DateSelectionPage(),
-                                    backgroundColor: Colors.transparent,
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime(
+                                        DateTime.now().year + 1,
+                                        DateTime.now().month,
+                                        DateTime.now().day),
                                   );
+                                  context
+                                      .read<FlightDetails>()
+                                      .travelDateRange = selectedDateRange;
                                 },
                               ),
                               Row(
@@ -195,19 +246,24 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                         ),
                                       ),
                                     ],
-                                    isSelected: _isSelected,
+                                    isSelected: [
+                                      getCurrentFlightType() ==
+                                          FlightType.oneWay,
+                                      getCurrentFlightType() ==
+                                          FlightType.roundTrip
+                                    ],
                                     onPressed: (int index) {
                                       setState(
                                         () {
-                                          for (int buttonIndex = 0;
-                                              buttonIndex < _isSelected.length;
-                                              buttonIndex++) {
-                                            if (buttonIndex == index) {
-                                              _isSelected[buttonIndex] = true;
-                                            } else {
-                                              _isSelected[buttonIndex] = false;
-                                            }
-                                          }
+                                          index == FlightType.oneWay.index
+                                              ? context
+                                                      .read<FlightDetails>()
+                                                      .flightType =
+                                                  FlightType.oneWay
+                                              : context
+                                                      .read<FlightDetails>()
+                                                      .flightType =
+                                                  FlightType.roundTrip;
                                         },
                                       );
                                     },
@@ -219,6 +275,8 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                           SleekCircularSlider(
                             appearance: CircularSliderAppearance(
                               size: 180.0,
+                              spinnerDuration: 1,
+                              animDurationMultiplier: 0.5,
                               customColors: CustomSliderColors(
                                 dotColor: Colors.blue,
                                 progressBarColor: Colors.blue,
@@ -229,12 +287,11 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                             ),
                             min: 1,
                             max: 500,
-                            initialValue: _currentBudgetSliderValue,
+                            initialValue: context.read<FlightDetails>().budget,
                             onChange: (double value) {
-                              _currentBudgetSliderValue = value;
+                              context.read<FlightDetails>().budget = value;
                             },
                             innerWidget: (double value) {
-                              _currentBudgetSliderValue = value;
                               return Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -247,7 +304,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                     height: 7.0,
                                   ),
                                   Text(
-                                    '${_currentBudgetSliderValue.round()} €',
+                                    '${value.round()} €',
                                     style:
                                         Theme.of(context).textTheme.headline4,
                                   ),
@@ -265,11 +322,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                     backgroundColor: Colors.amber,
                                     textColor: Colors.black,
                                     onPressed: () {
-                                      resetDepartureAirportField();
-                                      resetArrivalAirportField();
-                                      resetDateRangeField();
-                                      resetFlightTypeToggleButton();
-                                      resetBudgetSlider();
+                                      resetFlightDetails();
                                     },
                                   ),
                                   margin: EdgeInsets.symmetric(
@@ -285,13 +338,14 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                     textColor: Colors.black,
                                     onPressed: () {
                                       var departureAirport = context
-                                          .read<DepartureAirport>()
-                                          .airport;
+                                          .read<FlightDetails>()
+                                          .departureAirport;
                                       var arrivalAirport = context
-                                          .read<ArrivalAirport>()
-                                          .airport;
-                                      var dateRange =
-                                          context.read<DateRange>().dateRange;
+                                          .read<FlightDetails>()
+                                          .arrivalAirport;
+                                      var dateRange = context
+                                          .read<FlightDetails>()
+                                          .travelDateRange;
                                       if (departureAirport == null ||
                                           arrivalAirport == null ||
                                           dateRange == null) {

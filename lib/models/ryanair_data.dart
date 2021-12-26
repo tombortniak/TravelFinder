@@ -5,7 +5,7 @@ class RyanairData {
 
   RyanairData({required data}) : _data = data;
 
-  List<Airport> toAvailableDestinationsForAirport() {
+  List<Airport> toArrivalAirports() {
     List<Airport> airports = [];
     for (var element in _data['fares']) {
       var airportName = element['outbound']['arrivalAirport']['name'];

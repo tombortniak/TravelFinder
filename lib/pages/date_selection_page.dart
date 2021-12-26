@@ -4,7 +4,7 @@ import 'package:travel_finder/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_finder/components/button.dart';
 import 'package:provider/provider.dart';
-import 'package:travel_finder/models/date_range.dart';
+import 'package:travel_finder/models/flight_details.dart';
 
 class DateSelectionPage extends StatefulWidget {
   DateSelectionPage({Key? key}) : super(key: key);
@@ -138,11 +138,12 @@ class _DateSelectionPageState extends State<DateSelectionPage> {
                               onPressed: () {
                                 if (_rangeStart != null) {
                                   _rangeEnd ??= _rangeStart;
-                                  context.read<DateRange>().setDateTimeRange(
-                                        DateTimeRange(
-                                            start: _rangeStart!,
-                                            end: _rangeEnd!),
-                                      );
+                                  context
+                                          .read<FlightDetails>()
+                                          .travelDateRange =
+                                      DateTimeRange(
+                                          start: _rangeStart!, end: _rangeEnd!);
+
                                   Navigator.pop(context);
                                 }
                               },

@@ -6,14 +6,13 @@ import 'package:intl/intl.dart';
 import 'package:travel_finder/constants.dart';
 
 class RyanairDataFetcher {
-  //TODO Dokończyć generowanie url, pobieranie ryanairdata z url i zwracanie ryanairdata
   Future<List<Airport>> getAvailableDestinationsForAirport(
       Airport airport) async {
     HttpClient httpClient = HttpClient();
     String url = generateUrlForAirportAvailableDestinations(airport);
     var data = await httpClient.get(url);
     RyanairData ryanairData = RyanairData(data: data);
-    return ryanairData.toAvailableDestinationsForAirport();
+    return ryanairData.toArrivalAirports();
   }
 
   String generateUrlForAirportAvailableDestinations(Airport airport) {

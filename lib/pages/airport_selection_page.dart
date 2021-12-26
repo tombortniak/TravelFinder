@@ -4,11 +4,10 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:emoji_flag_converter/emoji_flag_converter.dart';
 import 'package:travel_finder/models/airport.dart';
-import 'package:travel_finder/models/arrival_airport.dart';
 import 'package:provider/provider.dart';
-import 'package:travel_finder/models/departure_airport.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:travel_finder/models/available_destinations.dart';
+import 'package:travel_finder/models/flight_details.dart';
 import 'package:travel_finder/services/ryanair_data_fetcher.dart';
 
 class AirportSelectionPage extends StatefulWidget {
@@ -67,7 +66,7 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
     List<Airport> airports = [];
     RyanairDataFetcher ryanairDataFetcher = RyanairDataFetcher();
     airports = await ryanairDataFetcher.getAvailableDestinationsForAirport(
-        context.read<DepartureAirport>().airport!);
+        context.read<FlightDetails>().departureAirport!);
     return airports;
   }
 
@@ -76,30 +75,17 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
     context.read<AvailableDestinations>().setAvailableDestinations(airports);
   }
 
-  void setDepartureAirport(Airport airport) {
-    context.read<DepartureAirport>().setAirport(airport);
-  }
-
-  void setArrivalAirport(Airport airport) {
-    context.read<ArrivalAirport>().setAirport(airport);
-  }
-
   void resetArrivalAirport() {
-    context.read<ArrivalAirport>().resetAirport();
+    context.read<FlightDetails>().arrivalAirport = null;
   }
 
   void setAnywhereDestination() {
-    context.read<ArrivalAirport>().setAirport(
-          Airport(
-              name: 'Anywhere',
-              country: '',
-              countryAlpha2Code: '',
-              iataCode: ''),
-        );
+    context.read<FlightDetails>().arrivalAirport = Airport(
+        name: 'Anywhere', country: '', countryAlpha2Code: '', iataCode: '');
   }
 
   bool currentDepartureAirportEquals(Airport airport) {
-    var currentAirport = context.read<DepartureAirport>().airport;
+    var currentAirport = context.read<FlightDetails>().departureAirport;
     return currentAirport == airport;
   }
 
@@ -118,6 +104,12 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
           children: [
             AppBar(
               backgroundColor: Colors.blue,
+              leading: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -201,11 +193,13 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
                         trailing: Text(airport.iataCode),
                         onTap: () async {
                           if (widget._isArrivalAirport) {
-                            setArrivalAirport(airport);
+                            context.read<FlightDetails>().arrivalAirport =
+                                airport;
                           } else {
                             if (!currentDepartureAirportEquals(airport)) {
                               resetArrivalAirport();
-                              setDepartureAirport(airport);
+                              context.read<FlightDetails>().departureAirport =
+                                  airport;
                               EasyLoading.show(status: 'Loading');
                               await setAvailableDestinationsForDepartureAirport();
                               EasyLoading.dismiss();

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class FlightSearchField extends StatefulWidget {
-  final Widget _text;
+class FlightDetailsField extends StatefulWidget {
+  final Text _text;
   final FaIcon _icon;
   final VoidCallback _onTap;
 
-  FlightSearchField({required text, required icon, required onTap})
+  FlightDetailsField({required text, required icon, required onTap})
       : _text = text,
         _icon = icon,
         _onTap = onTap;
 
   @override
-  State<FlightSearchField> createState() => _FlightSearchFieldState();
+  State<FlightDetailsField> createState() => _FlightDetailsFieldState();
 }
 
-class _FlightSearchFieldState extends State<FlightSearchField> {
+class _FlightDetailsFieldState extends State<FlightDetailsField> {
   @override
   Widget build(BuildContext context) {
     return InkWell(

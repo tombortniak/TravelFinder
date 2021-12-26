@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:travel_finder/models/arrival_airport.dart';
 import 'package:travel_finder/models/available_destinations.dart';
-import 'package:travel_finder/models/departure_airport.dart';
 import 'package:travel_finder/pages/home_page.dart';
 import 'package:provider/provider.dart';
-import 'models/date_range.dart';
 import 'theme.dart';
-import 'constants.dart';
+import 'package:travel_finder/models/flight_details.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,16 +13,10 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-        create: (_) => DepartureAirport(),
-      ),
-      ChangeNotifierProvider(
-        create: (_) => ArrivalAirport(),
+        create: (_) => FlightDetails(),
       ),
       ChangeNotifierProvider(
         create: (_) => AvailableDestinations(),
-      ),
-      ChangeNotifierProvider(
-        create: (_) => DateRange(),
       ),
     ],
     child: const App(),
