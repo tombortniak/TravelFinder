@@ -1,28 +1,25 @@
 import 'package:travel_finder/models/flight_details.dart';
+import 'package:travel_finder/services/ryanair_endpoint_url_generator.dart';
 import 'package:travel_finder/services/http_client.dart';
 import 'package:travel_finder/models/airport.dart';
-import 'package:travel_finder/models/ryanair_data.dart';
-import 'package:intl/intl.dart';
-import 'package:travel_finder/constants.dart';
 
 class RyanairDataFetcher {
-  Future<List<Airport>> getAvailableDestinationsForAirport(
+  Future<Map<String, dynamic>> getAvailableDestinationsForAirport(
       Airport airport) async {
     HttpClient httpClient = HttpClient();
-    String url = generateUrlForAirportAvailableDestinations(airport);
+    String url =
+        RyanairEndpointUrlGenerator.generateUrlForAirportAvailableDestinations(
+            airport);
     var data = await httpClient.get(url);
-    RyanairData ryanairData = RyanairData(data: data);
-    return ryanairData.toArrivalAirports();
+    return data;
   }
 
-  String generateUrlForAirportAvailableDestinations(Airport airport) {
-    double budget = 1000;
-    String dateRangeStart = DateFormat('y-M-d').format(DateTime.now());
-    String dateRangeEnd = DateFormat('y-M-d').format(DateTime(
-        DateTime.now().year + 1, DateTime.now().month, DateTime.now().day));
+  Future<Map<String, dynamic>> getOneWayFlights(
+      FlightDetails flightDetails) async {
+    HttpClient httpClient = HttpClient();
     String url =
-        '$kBaseRyanairUrl$kOneWayUrl&departureAirportIataCode=${airport.iataCode}&&outboundDepartureDateFrom=$dateRangeStart&outboundDepartureDateTo=$dateRangeEnd&priceValueTo=$budget';
-
-    return url;
+        RyanairEndpointUrlGenerator.generateUrlForOneWayFlights(flightDetails);
+    var data = await httpClient.get(url);
+    return data;
   }
 }

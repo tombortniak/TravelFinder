@@ -1,13 +1,14 @@
 import 'package:travel_finder/models/airport.dart';
+import 'package:travel_finder/models/flight.dart';
 
 class RyanairData {
-  final Map<String, dynamic> _data;
+  final Map<String, dynamic> data;
 
-  RyanairData({required data}) : _data = data;
+  RyanairData({required this.data});
 
   List<Airport> toArrivalAirports() {
     List<Airport> airports = [];
-    for (var element in _data['fares']) {
+    for (var element in data['fares']) {
       var airportName = element['outbound']['arrivalAirport']['name'];
       var country = element['outbound']['arrivalAirport']['countryName'];
       var countryAlpha2Code = element['outbound']['arrivalAirport']['city']
@@ -17,7 +18,7 @@ class RyanairData {
       airports.add(
         Airport(
             name: airportName,
-            country: country,
+            countryName: country,
             countryAlpha2Code: countryAlpha2Code,
             iataCode: iataCode),
       );

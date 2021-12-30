@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:travel_finder/pages/explore_page.dart';
 import 'package:travel_finder/pages/flight_search_page.dart';
+import 'package:travel_finder/pages/flight_search_results_page.dart';
 
 GlobalKey<NavigatorState> exploreNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -25,6 +26,10 @@ class _ExploreNavigatorState extends State<ExploreNavigator> {
                   return ExplorePage();
                 case '/flightSearch':
                   return FlightSearchPage();
+                case '/flightSearch/flightSearchResults':
+                  return FlightSearchResultsPage(
+                    flightDetails: settings.arguments,
+                  );
                 default:
                   return Container();
               }

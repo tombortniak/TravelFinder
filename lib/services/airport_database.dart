@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_finder/models/airport.dart';
 
 class AirportDatabase {
-  static Future<List<Airport>> getAvailableAirports() async {
+  Future<List<Airport>> getAvailableAirports() async {
     List<Airport> availableAirports = [];
     FirebaseFirestore.instance
         .collection('airports')
@@ -11,7 +11,7 @@ class AirportDatabase {
       for (var doc in querySnapshot.docs) {
         Airport airport = Airport(
             name: doc['name'],
-            country: doc['country'],
+            countryName: doc['countryName'],
             countryAlpha2Code: doc['countryAlpha2Code'],
             iataCode: doc['iataCode']);
         availableAirports.add(airport);

@@ -11,6 +11,7 @@ import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:travel_finder/components/button.dart';
 import 'package:travel_finder/models/flight_details.dart';
 import 'package:intl/intl.dart';
+import 'package:travel_finder/models/available_destinations.dart';
 
 class FlightSearchPage extends StatefulWidget {
   FlightSearchPage({Key? key}) : super(key: key);
@@ -21,6 +22,7 @@ class FlightSearchPage extends StatefulWidget {
 
 class _FlightSearchPageState extends State<FlightSearchPage> {
   List<Airport>? _availableAirports;
+  AirportDatabase _airportDatabase = AirportDatabase();
 
   FlightType getCurrentFlightType() {
     return context.read<FlightDetails>().flightType;
@@ -33,7 +35,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Airport>>(
-        future: AirportDatabase.getAvailableAirports(),
+        future: _airportDatabase.getAvailableAirports(),
         builder: (BuildContext context, AsyncSnapshot<List<Airport>> snapshot) {
           Widget child;
           if (snapshot.hasError) {
@@ -170,8 +172,9 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                       pageBuilder: (context, animation,
                                               secondaryAnimation) =>
                                           AirportSelectionPage(
-                                              availableAirports:
-                                                  _availableAirports,
+                                              availableAirports: context
+                                                  .read<AvailableDestinations>()
+                                                  .availableDestinations,
                                               isArrivalAirport: true),
                                       transitionDuration:
                                           Duration(milliseconds: 100),
@@ -364,6 +367,13 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                                             backgroundColor: Colors.red,
                                             padding: EdgeInsets.all(20.0),
                                           ),
+                                        );
+                                      } else {
+                                        Navigator.pushNamed(
+                                          context,
+                                          '/flightSearch/flightSearchResults',
+                                          arguments:
+                                              context.read<FlightDetails>(),
                                         );
                                       }
                                     },

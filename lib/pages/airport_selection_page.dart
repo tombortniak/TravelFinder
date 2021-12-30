@@ -9,6 +9,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:travel_finder/models/available_destinations.dart';
 import 'package:travel_finder/models/flight_details.dart';
 import 'package:travel_finder/services/ryanair_data_fetcher.dart';
+import 'package:travel_finder/services/ryanair_data_parser.dart';
 
 class AirportSelectionPage extends StatefulWidget {
   final bool _isArrivalAirport;
@@ -23,8 +24,9 @@ class AirportSelectionPage extends StatefulWidget {
 
   void groupCountriesWithAlpha2Codes() {
     for (var airport in _availableAirports) {
-      if (!_alpha2CodesByCountries.containsKey(airport.country)) {
-        _alpha2CodesByCountries[airport.country] = airport.countryAlpha2Code;
+      if (!_alpha2CodesByCountries.containsKey(airport.countryName)) {
+        _alpha2CodesByCountries[airport.countryName] =
+            airport.countryAlpha2Code;
       }
     }
   }
@@ -63,10 +65,12 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
   }
 
   Future<List<Airport>> getAvailableDestinationsForDepartureAirport() async {
-    List<Airport> airports = [];
     RyanairDataFetcher ryanairDataFetcher = RyanairDataFetcher();
-    airports = await ryanairDataFetcher.getAvailableDestinationsForAirport(
-        context.read<FlightDetails>().departureAirport!);
+    var ryanairData =
+        await ryanairDataFetcher.getAvailableDestinationsForAirport(
+            context.read<FlightDetails>().departureAirport!);
+    List<Airport> airports =
+        RyanairDataParser.parseToAvailableDestinations(ryanairData);
     return airports;
   }
 
@@ -80,8 +84,7 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
   }
 
   void setAnywhereDestination() {
-    context.read<FlightDetails>().arrivalAirport = Airport(
-        name: 'Anywhere', country: '', countryAlpha2Code: '', iataCode: '');
+    context.read<FlightDetails>().arrivalAirport = Airport.anywhereDestination;
   }
 
   bool currentDepartureAirportEquals(Airport airport) {
@@ -157,7 +160,7 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
                   controller: ModalScrollController.of(context),
                   shrinkWrap: true,
                   elements: _availableAirports,
-                  groupBy: (airport) => airport.country,
+                  groupBy: (airport) => airport.countryName,
                   groupComparator: (firstCountry, secondCountry) =>
                       secondCountry.compareTo(firstCountry),
                   itemComparator: (firstAirport, secondAirport) =>
