@@ -8,8 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:travel_finder/models/available_destinations.dart';
 import 'package:travel_finder/models/flight_details.dart';
-import 'package:travel_finder/services/ryanair_data_fetcher.dart';
-import 'package:travel_finder/services/ryanair_data_parser.dart';
+import 'package:travel_finder/services/web_api/ryanair_flights_api.dart';
 
 class AirportSelectionPage extends StatefulWidget {
   final bool _isArrivalAirport;
@@ -65,12 +64,10 @@ class _AirportSelectionPageState extends State<AirportSelectionPage> {
   }
 
   Future<List<Airport>> getAvailableDestinationsForDepartureAirport() async {
-    RyanairDataFetcher ryanairDataFetcher = RyanairDataFetcher();
-    var ryanairData =
-        await ryanairDataFetcher.getAvailableDestinationsForAirport(
-            context.read<FlightDetails>().departureAirport!);
+    RyanairFlightsApi ryanairFlightsApi = RyanairFlightsApi();
+    Airport departureAirport = context.read<FlightDetails>().departureAirport!;
     List<Airport> airports =
-        RyanairDataParser.parseToAvailableDestinations(ryanairData);
+        await ryanairFlightsApi.fetchAvailableDestinations(departureAirport);
     return airports;
   }
 

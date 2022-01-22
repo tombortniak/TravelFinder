@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:travel_finder/constants.dart';
 import 'package:travel_finder/pages/airport_selection_page.dart';
 import 'package:travel_finder/components/flight_details_field.dart';
-import 'package:travel_finder/services/airport_database.dart';
+import 'package:travel_finder/services/database/ryanair_airports_database.dart';
 import 'package:travel_finder/models/airport.dart';
 import 'package:provider/provider.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
@@ -22,7 +22,7 @@ class FlightSearchPage extends StatefulWidget {
 
 class _FlightSearchPageState extends State<FlightSearchPage> {
   List<Airport>? _availableAirports;
-  AirportDatabase _airportDatabase = AirportDatabase();
+  RyanairAirportsDatabase _airportDatabase = RyanairAirportsDatabase();
 
   FlightType getCurrentFlightType() {
     return context.read<FlightDetails>().flightType;

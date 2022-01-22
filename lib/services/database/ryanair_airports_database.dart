@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_finder/models/airport.dart';
+import 'airports_database.dart';
 
-class AirportDatabase {
+class RyanairAirportsDatabase implements AirportsDatabase {
   Future<List<Airport>> getAvailableAirports() async {
     List<Airport> availableAirports = [];
     FirebaseFirestore.instance
