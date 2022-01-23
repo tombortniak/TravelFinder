@@ -52,24 +52,25 @@ class _FlightSearchResultsPageState extends State<FlightSearchResultsPage> {
           if (snapshot.data.length > 1) {
             child = Expanded(
               child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(snapshot.data[index].arrivalAirport.name),
-                      subtitle:
-                          Text(snapshot.data[index].arrivalAirport.countryName),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return FlightSearchResultDetailsPage(
-                                flight: snapshot.data[index]);
-                          },
-                        );
-                      },
-                    );
-                  }),
+                shrinkWrap: true,
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(snapshot.data[index].arrivalAirport.name),
+                    subtitle:
+                        Text(snapshot.data[index].arrivalAirport.countryName),
+                    onTap: () {
+                      showGeneralDialog(
+                        context: context,
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            FlightSearchResultDetailsPage(
+                                flight: snapshot.data[index]),
+                        transitionDuration: Duration(milliseconds: 100),
+                      );
+                    },
+                  );
+                },
+              ),
             );
           } else {
             final Flight flight = snapshot.data.first;
