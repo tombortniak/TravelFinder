@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:travel_finder/models/flight_details.dart';
 import 'package:travel_finder/models/flight.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:travel_finder/pages/flight_search_result_details_page.dart';
 import 'package:travel_finder/services/web_api/ryanair_flights_api.dart';
+import 'package:travel_finder/components/search_result_card.dart';
 
 class FlightSearchResultsPage extends StatefulWidget {
   final FlightDetails _flightDetails;
@@ -17,12 +20,12 @@ class FlightSearchResultsPage extends StatefulWidget {
 }
 
 class _FlightSearchResultsPageState extends State<FlightSearchResultsPage> {
-  RyanairFlightsApi ryanairFlightsApi = RyanairFlightsApi();
+  RyanairFlightsApi flightsApi = RyanairFlightsApi();
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: ryanairFlightsApi.fetchOneWayFlights(widget._flightDetails),
+      future: flightsApi.fetchCheapestOneWayFlights(widget._flightDetails),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasError) {
           return Column(
@@ -45,16 +48,63 @@ class _FlightSearchResultsPageState extends State<FlightSearchResultsPage> {
             ],
           );
         } else if (snapshot.hasData) {
-          return ListView.builder(
-            itemCount: snapshot.data.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                subtitle: Text(snapshot.data[index].departureAirport.name),
-                title: Text(snapshot.data[index].arrivalAirport.name),
-                trailing:
-                    Text('${snapshot.data[index].ticketPrice.toString()} EUR'),
-              );
-            },
+          Widget child;
+          if (snapshot.data.length > 1) {
+            child = Expanded(
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(snapshot.data[index].arrivalAirport.name),
+                      subtitle:
+                          Text(snapshot.data[index].arrivalAirport.countryName),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return FlightSearchResultDetailsPage(
+                                flight: snapshot.data[index]);
+                          },
+                        );
+                      },
+                    );
+                  }),
+            );
+          } else {
+            final Flight flight = snapshot.data.first;
+            child = Expanded(
+              child: Container(
+                child: Column(
+                  children: [
+                    Text(
+                      'Cheapest flight',
+                      style: Theme.of(context).textTheme.headline2,
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Container(
+                      child: SearchResultCard(
+                        flight: flight,
+                      ),
+                      margin: EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 40.0),
+                    )
+                  ],
+                ),
+                margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 20.0),
+              ),
+            );
+          }
+          return Container(
+            color: Colors.white,
+            child: Column(
+              children: [
+                AppBar(),
+                child,
+              ],
+            ),
           );
         } else {
           return Container(

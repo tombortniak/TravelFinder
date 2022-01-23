@@ -28,7 +28,7 @@ class RyanairApiUrlGenerator {
     String dateRangeEnd =
         DateFormat('y-MM-dd').format(flightDetails.travelDateRange!.end);
     String url =
-        '$baseRyanairFlightsPerDayUrl/${flightDetails.departureAirport}/${flightDetails.arrivalAirport}${cheapestFlightsPerDayUrl}outboundDateFrom=$dateRangeStart&outboundDateTo=$dateRangeEnd';
+        '$baseRyanairFlightsPerDayUrl/${flightDetails.departureAirport!.iataCode}/${flightDetails.arrivalAirport!.iataCode}${cheapestFlightsPerDayUrl}outboundDateFrom=$dateRangeStart&outboundDateTo=$dateRangeEnd';
     return url;
   }
 

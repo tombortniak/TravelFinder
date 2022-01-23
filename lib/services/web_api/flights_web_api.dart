@@ -4,7 +4,7 @@ import 'package:travel_finder/models/flight_details.dart';
 
 abstract class FlightsWebApi {
   Future<Map<String, dynamic>> fetchData(String url);
-  Future<List<Flight>> fetchOneWayFlights(FlightDetails flightDetails);
+  Future<List<Flight>> fetchOneWayFlightsPerDay(FlightDetails flightDetails);
   Future<List<Flight>> fetchCheapestOneWayFlights(FlightDetails flightDetails);
   Future<List<Flight>> fetchCheapestRoundTripFlights(
       FlightDetails flightDetails);

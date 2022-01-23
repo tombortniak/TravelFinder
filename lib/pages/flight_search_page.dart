@@ -22,7 +22,7 @@ class FlightSearchPage extends StatefulWidget {
 
 class _FlightSearchPageState extends State<FlightSearchPage> {
   List<Airport>? _availableAirports;
-  RyanairAirportsDatabase _airportDatabase = RyanairAirportsDatabase();
+  RyanairAirportsDatabase _airportsDatabase = RyanairAirportsDatabase();
 
   FlightType getCurrentFlightType() {
     return context.read<FlightDetails>().flightType;
@@ -35,7 +35,7 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Airport>>(
-        future: _airportDatabase.getAvailableAirports(),
+        future: _airportsDatabase.getAvailableAirports(),
         builder: (BuildContext context, AsyncSnapshot<List<Airport>> snapshot) {
           Widget child;
           if (snapshot.hasError) {
@@ -67,6 +67,15 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                   AppBar(
                     backgroundColor: Colors.blue,
                     elevation: 0,
+                    actions: [
+                      IconButton(
+                        icon: Icon(FontAwesomeIcons.undo),
+                        tooltip: 'Reset flight details',
+                        onPressed: () {
+                          resetFlightDetails();
+                        },
+                      ),
+                    ],
                   ),
                   Expanded(
                     child: Container(
@@ -318,22 +327,6 @@ class _FlightSearchPageState extends State<FlightSearchPage> {
                           Row(
                             children: [
                               Expanded(
-                                flex: 2,
-                                child: Container(
-                                  child: Button(
-                                    text: 'Reset',
-                                    backgroundColor: Colors.amber,
-                                    textColor: Colors.black,
-                                    onPressed: () {
-                                      resetFlightDetails();
-                                    },
-                                  ),
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 20.0, vertical: 15.0),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 3,
                                 child: Container(
                                   child: Button(
                                     text: 'Search',
